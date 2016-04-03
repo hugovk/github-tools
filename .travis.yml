@@ -18,7 +18,7 @@ install:
 script:
  # Pretend tests
  - pep8 --statistics --count .
- - pyflakes . | tee >(wc -l)
+ - pyflakes .
 
 matrix:
   fast_finish: true
