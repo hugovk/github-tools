@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # encoding: utf-8
 """
-Download all the diffs of PRs made during October
+Download all the diffs of PRs made during Hacktoberfest
 You can then run `diffstat /tmp/hacktoberfest/*.diff` to get a summary:
     714 files changed, 9843 insertions(+), 13719 deletions(-)
 """
@@ -95,7 +95,7 @@ def download_diff(issue):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description="Download all the diffs of PRs made during October",
+        description="Download all the diffs of PRs made during Hacktoberfest",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument(
         '-a', '--author', default='hugovk',
@@ -116,7 +116,7 @@ if __name__ == "__main__":
     # https://developer.github.com/v3/search/#search-issues
 
     start_url = ('https://api.github.com/search/issues?q=is:pr+author:{author}'
-                 '+created:{year}-10-01..{year}-10-31+{type}')
+                 '+created:{year}-09-30..{year}-11-01+{type}')
 
     pr_type = ""
     if args.type == "open":
