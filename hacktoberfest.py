@@ -107,10 +107,6 @@ if __name__ == "__main__":
         '-t', '--type', default='all',
         choices=('all', 'open', 'merged', 'unmerged'),
         help="Filter by state of PR")
-    parser.add_argument(
-        '-s', '--start_url',
-        default='',
-        help="Start URL")
     args = parser.parse_args()
 
     # is:pr author:hugovk created:2017-10-01..2017-10-31 is:open
