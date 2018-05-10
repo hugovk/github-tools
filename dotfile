@@ -1,0 +1,24 @@
+# Source or put this in your .bashrc/.zshrc
+
+function gclonecd() {
+    # Usage: gclonecd https://github.com/someoneelse/somerepo
+    # Or:
+    # Usage: gclonecd https://github.com/someoneelse/somerepo/some/other/junk
+    # Does:
+    # git clone https://github.com/hugovk/somerepo
+    # cd somerepo
+    # git remote add upstream https://github.com/someoneelse/somerepo
+
+    local me=hugovk
+    # Ditch stuff after the fifth slash
+    local remote=$(echo "$1" | cut -d '/' -f-5)
+    local repo=$(basename "$remote")
+    local origin="https://github.com/$me/$repo"
+    travis sync \
+    && git clone "$origin" \
+    && cd "$repo" \
+    && git remote add upstream "$remote" \
+    && git remote -v \
+    && travis enable \
+    && open "https://travis-ci.org/$me/$repo"
+}
