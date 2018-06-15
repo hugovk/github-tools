@@ -7,16 +7,16 @@ python:
  - 3.4
  - 3.5
  - 3.6
+ - 3.7-dev
 
 sudo: false
 
 install:
- - pip install pyflakes pycodestyle
+ - pip install flake8
 
 script:
  # Static analysis
- - pyflakes .
- - pycodestyle --statistics --count .
+ - flake8 --statistics --count .
 
 matrix:
   fast_finish: true
