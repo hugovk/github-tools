@@ -32,24 +32,24 @@ def bleep(url):
     except KeyError:
         next_url = None
 
-    if int(r.headers['X-Ratelimit-Remaining']) < 12:
+    if int(r.headers["X-Ratelimit-Remaining"]) < 12:
         print("r.status_code", r.status_code)
-        print("X-Ratelimit-Limit", r.headers['X-Ratelimit-Limit'])
-        print("X-Ratelimit-Remaining", r.headers['X-Ratelimit-Remaining'])
-        print("X-RateLimit-Reset", r.headers['X-RateLimit-Reset'])
-        remaining_time = int(r.headers['X-RateLimit-Reset']) - time.time()
+        print("X-Ratelimit-Limit", r.headers["X-Ratelimit-Limit"])
+        print("X-Ratelimit-Remaining", r.headers["X-Ratelimit-Remaining"])
+        print("X-RateLimit-Reset", r.headers["X-RateLimit-Reset"])
+        remaining_time = int(r.headers["X-RateLimit-Reset"]) - time.time()
         print(remaining_time, "seconds")
-        print(remaining_time/60, "minutes")
+        print(remaining_time / 60, "minutes")
         reset_time = datetime.datetime.fromtimestamp(
-                        int(int(r.headers['X-RateLimit-Reset']))
-                    ).strftime('%Y-%m-%d %H:%M:%S')
+            int(int(r.headers["X-RateLimit-Reset"]))
+        ).strftime("%Y-%m-%d %H:%M:%S")
         print(reset_time)
 
     if r.status_code == 200:
         return r.json(), next_url
 
     elif r.status_code == 403:
-        if int(r.headers['X-Ratelimit-Remaining']) == 0:
+        if int(r.headers["X-Ratelimit-Remaining"]) == 0:
             eprint("Rate limit exceeded")
         sys.exit(403)
 
@@ -87,14 +87,14 @@ def download_diff(issue):
     outfile = os.path.join("/tmp/hacktoberfest/", outfile)
     # print(outfile)
 
-    cmd = "wget --quiet -nc {} -O {}".format(issue["pull_request"]["diff_url"],
-                                             outfile)
+    cmd = "wget --quiet -nc {} -O {}".format(issue["pull_request"]["diff_url"], outfile)
     # print(cmd)
     os.system(cmd)
 
 
 def mkdir(directory):
     import os
+
     if not os.path.isdir(directory):
         os.mkdir(directory)
 
@@ -102,17 +102,21 @@ def mkdir(directory):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="Download all the diffs of PRs made during Hacktoberfest",
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    )
     parser.add_argument(
-        '-a', '--author', default='hugovk',
-        help="Find PRs created by this user")
+        "-a", "--author", default="hugovk", help="Find PRs created by this user"
+    )
     parser.add_argument(
-        '-y', '--year', default='2018',
-        help="Find PRs in October of this year")
+        "-y", "--year", default="2018", help="Find PRs in October of this year"
+    )
     parser.add_argument(
-        '-t', '--type', default='all',
-        choices=('all', 'open', 'merged', 'unmerged'),
-        help="Filter by state of PR")
+        "-t",
+        "--type",
+        default="all",
+        choices=("all", "open", "merged", "unmerged"),
+        help="Filter by state of PR",
+    )
     args = parser.parse_args()
 
     # is:pr author:hugovk created:2017-10-01..2017-10-31 is:open
@@ -121,8 +125,10 @@ if __name__ == "__main__":
 
     # https://developer.github.com/v3/search/#search-issues
 
-    start_url = ('https://api.github.com/search/issues?q=is:pr+author:{author}'
-                 '+created:{year}-09-30..{year}-11-01+{type}')
+    start_url = (
+        "https://api.github.com/search/issues?q=is:pr+author:{author}"
+        "+created:{year}-09-30..{year}-11-01+{type}"
+    )
 
     pr_type = ""
     if args.type == "open":
@@ -133,9 +139,7 @@ if __name__ == "__main__":
         pr_type = "is:closed+is:unmerged"
 
     mkdir("/tmp/hacktoberfest/")
-    prs = get_prs(start_url.format(author=args.author,
-                                   type=pr_type,
-                                   year=args.year))
+    prs = get_prs(start_url.format(author=args.author, type=pr_type, year=args.year))
 
     print_type = "" if args.type == "all" else args.type + " "
     print("{} total {}PRs".format(len(prs), print_type))

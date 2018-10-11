@@ -29,24 +29,24 @@ def bleep(url):
     except KeyError:
         next_url = None
 
-    if int(r.headers['X-Ratelimit-Remaining']) < 12:
+    if int(r.headers["X-Ratelimit-Remaining"]) < 12:
         print("r.status_code", r.status_code)
-        print("X-Ratelimit-Limit", r.headers['X-Ratelimit-Limit'])
-        print("X-Ratelimit-Remaining", r.headers['X-Ratelimit-Remaining'])
-        print("X-RateLimit-Reset", r.headers['X-RateLimit-Reset'])
-        remaining_time = int(r.headers['X-RateLimit-Reset']) - time.time()
+        print("X-Ratelimit-Limit", r.headers["X-Ratelimit-Limit"])
+        print("X-Ratelimit-Remaining", r.headers["X-Ratelimit-Remaining"])
+        print("X-RateLimit-Reset", r.headers["X-RateLimit-Reset"])
+        remaining_time = int(r.headers["X-RateLimit-Reset"]) - time.time()
         print(remaining_time, "seconds")
-        print(remaining_time/60, "minutes")
+        print(remaining_time / 60, "minutes")
         reset_time = datetime.datetime.fromtimestamp(
-                        int(int(r.headers['X-RateLimit-Reset']))
-                    ).strftime('%Y-%m-%d %H:%M:%S')
+            int(int(r.headers["X-RateLimit-Reset"]))
+        ).strftime("%Y-%m-%d %H:%M:%S")
         print(reset_time)
 
     if r.status_code == 200:
         return r.json(), next_url
 
     elif r.status_code == 403:
-        if int(r.headers['X-Ratelimit-Remaining']) == 0:
+        if int(r.headers["X-Ratelimit-Remaining"]) == 0:
             eprint("Rate limit exceeded")
         sys.exit(403)
 
@@ -85,16 +85,19 @@ def get_prs(start_url):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="Find which of my PRs have merge conflicts.",
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    )
     parser.add_argument(
-        '-a', '--author', default='hugovk',
-        help="Find PRs created by this user")
+        "-a", "--author", default="hugovk", help="Find PRs created by this user"
+    )
     args = parser.parse_args()
 
     # https://developer.github.com/v3/search/#search-issues
 
-    start_url = ('https://api.github.com/search/issues?q=is:pr+author:{author}'
-                 '+sort:updated-asc+is:open'.format(author=args.author))
+    start_url = (
+        "https://api.github.com/search/issues?q=is:pr+author:{author}"
+        "+sort:updated-asc+is:open".format(author=args.author)
+    )
     print(start_url)
 
     prs = get_prs(start_url)
