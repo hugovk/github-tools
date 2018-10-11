@@ -101,7 +101,7 @@ if __name__ == "__main__":
         '-a', '--author', default='hugovk',
         help="Find PRs created by this user")
     parser.add_argument(
-        '-y', '--year', default='2017',
+        '-y', '--year', default='2018',
         help="Find PRs in October of this year")
     parser.add_argument(
         '-t', '--type', default='all',
