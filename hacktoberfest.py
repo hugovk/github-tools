@@ -93,6 +93,12 @@ def download_diff(issue):
     os.system(cmd)
 
 
+def mkdir(directory):
+    import os
+    if not os.path.isdir(directory):
+        os.mkdir(directory)
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="Download all the diffs of PRs made during Hacktoberfest",
@@ -126,6 +132,7 @@ if __name__ == "__main__":
     elif args.type == "unmerged":
         pr_type = "is:closed+is:unmerged"
 
+    mkdir("/tmp/hacktoberfest/")
     prs = get_prs(start_url.format(author=args.author,
                                    type=pr_type,
                                    year=args.year))
