@@ -12,6 +12,7 @@ import time
 from pprint import pprint
 
 import requests
+from termcolor import colored
 
 
 def eprint(*args, **kwargs):
@@ -47,7 +48,7 @@ def bleep(url):
 
     elif r.status_code == 403:
         if int(r.headers["X-Ratelimit-Remaining"]) == 0:
-            eprint("Rate limit exceeded")
+            eprint(colored("Rate limit exceeded", "red"))
         sys.exit(403)
 
     return None, None
@@ -73,7 +74,7 @@ def get_prs(start_url):
                 # print("mergeable:\t{}".format(issue["html_url"]))
                 pass
             else:
-                print("unmergeable:\t{}".format(issue["html_url"]))
+                print(colored("unmergeable:\t{}".format(issue["html_url"]), "red"))
                 issues.append(issue)
 
         if not next_url:
