@@ -3,8 +3,6 @@
 """
 Show which non-fork repos I created this year.
 """
-from __future__ import print_function
-
 import argparse
 import datetime
 

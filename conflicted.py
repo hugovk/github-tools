@@ -3,8 +3,6 @@
 """
 Find which of my PRs have merge conflicts.
 """
-from __future__ import print_function, unicode_literals
-
 import argparse
 import datetime
 import sys
