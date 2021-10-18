@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# encoding: utf-8
 """
 Show which non-fork repos I created this year.
 """
@@ -19,7 +18,7 @@ def print_it(text):
 
 
 def timestamp():
-    """ Print a timestamp and the filename with path """
+    """Print a timestamp and the filename with path"""
     print(datetime.datetime.now().strftime("%A, %d. %B %Y %I:%M%p") + " " + __file__)
 
 

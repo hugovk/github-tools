@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# encoding: utf-8
 """
 Download all the diffs of PRs made during Hacktoberfest
 You can then run `diffstat /tmp/hacktoberfest/*.diff` to get a summary:
@@ -20,7 +19,7 @@ def eprint(*args, **kwargs):
 
 
 def bleep(url):
-    """ Call the API and return JSON and next URL """
+    """Call the API and return JSON and next URL"""
     # print(url)
     r = requests.get(url)
     pprint(r)
@@ -140,6 +139,6 @@ if __name__ == "__main__":
     prs = get_prs(start_url.format(author=args.author, type=pr_type, year=args.year))
 
     print_type = "" if args.type == "all" else args.type + " "
-    print("{} total {}PRs".format(len(prs), print_type))
+    print(f"{len(prs)} total {print_type}PRs")
 
 # End of file

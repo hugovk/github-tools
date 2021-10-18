@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# encoding: utf-8
 """
 Find which of my PRs have merge conflicts.
 """
@@ -18,7 +17,7 @@ def eprint(*args, **kwargs):
 
 
 def bleep(url):
-    """ Call the API and return JSON and next URL """
+    """Call the API and return JSON and next URL"""
     # print(url)
     r = requests.get(url)
     # pprint(r)
@@ -102,6 +101,6 @@ if __name__ == "__main__":
     prs = get_prs(start_url)
     pprint(prs)
 
-    print("{} total unmergeable PRs".format(len(prs)))
+    print(f"{len(prs)} total unmergeable PRs")
 
 # End of file
