@@ -22,9 +22,14 @@ def main(args):
 
     # git@github.com:user/repo.git
     # ->
-    # https://github.com:user/repo.git
+    # https://github.com/user/repo.git
     if url.startswith("git@"):
         url = "https://" + url.removeprefix("git@").replace(":", "/")
+
+    # https://github.com/user/repo.git
+    # ->
+    # https://github.com:user/repo
+    url = url.removesuffix(".git")
 
     if args.tab:
         url += "/" + args.tab
