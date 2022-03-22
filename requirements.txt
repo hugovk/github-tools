@@ -1,2 +1,3 @@
+jsonlines
 requests
 termcolor
