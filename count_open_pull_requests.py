@@ -19,7 +19,11 @@ def find_oldest(pull_requests: list[dict]) -> tuple[list[dict], str]:
 
         # Keep only the data we need to speed up later processing
         new_pull_requests.append(
-            {k: v for k, v in pr.items() if k in ("created_at", "closed_at")}
+            {
+                k: v
+                for k, v in pr.items()
+                if k in ("created_at", "closed_at", "merged_at")
+            }
         )
     pull_requests = list(new_pull_requests)
     return pull_requests, oldest
@@ -85,6 +89,34 @@ def opened_per_week(pull_requests: list[dict]) -> None:
         print(f"{k}, {v['any state']}, {v['still open']}")
 
 
+def closed_per_week(pull_requests: list[dict]) -> None:
+    """
+    Find the number of pull requests closed in each week
+    """
+    closed_by_week = defaultdict(lambda: defaultdict(int))
+    for pr in pull_requests:
+        if not pr["closed_at"]:
+            continue
+        # Slice 2022-03-22T08:39:59Z into 2022-03-22 and make dt.date
+        closed_date = dt.date.fromisoformat(pr["closed_at"][:10])
+        week_str = (
+            f"{closed_date.isocalendar().year} w{closed_date.isocalendar().week:02}"
+        )
+
+        # Count all
+        closed_by_week[week_str]["closed"] += 1
+
+        # Count only those that got merged
+        if pr["merged_at"]:
+            closed_by_week[week_str]["merged"] += 1
+            # open_by_week[week_str] += 1
+
+    print("Week number, PRs closed this week, PRs merged this week")
+    for k, v in sorted(closed_by_week.items()):
+        # print(f"{k}, {v}")
+        print(f"{k}, {v['closed']}, {v['merged']}")
+
+
 def main():
     parser = argparse.ArgumentParser(
         description=__doc__, formatter_class=argparse.ArgumentDefaultsHelpFormatter
@@ -94,6 +126,9 @@ def main():
     )
     parser.add_argument(
         "--opened_per_week", action="store_true", help=opened_per_week.__doc__
+    )
+    parser.add_argument(
+        "--closed_per_week", action="store_true", help=closed_per_week.__doc__
     )
     args = parser.parse_args()
 
@@ -106,6 +141,8 @@ def main():
         open_per_day(pull_requests, oldest)
     if args.opened_per_week:
         opened_per_week(pull_requests)
+    if args.closed_per_week:
+        closed_per_week(pull_requests)
 
 
 if __name__ == "__main__":
