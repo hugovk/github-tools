@@ -63,7 +63,7 @@ def opened_per_week(pull_requests: list[dict]) -> None:
     """
     Find the number of pull requests opened in each week
     """
-    open_by_week = defaultdict(int)
+    open_by_week = defaultdict(lambda: defaultdict(int))
     for pr in pull_requests:
         # Slice 2022-03-22T08:39:59Z into 2022-03-22 and make dt.date
         created_date = dt.date.fromisoformat(pr["created_at"][:10])
@@ -71,11 +71,18 @@ def opened_per_week(pull_requests: list[dict]) -> None:
             f"{created_date.isocalendar().year} "
             f"w{created_date.isocalendar().week:02}"
         )
-        open_by_week[week_str] += 1
 
-    print("Week number, PRs opened this week")
+        # Count all
+        open_by_week[week_str]["any state"] += 1
+
+        # Count only those still open today, they have no closed_at date
+        if not pr["closed_at"]:
+            open_by_week[week_str]["still open"] += 1
+            # open_by_week[week_str] += 1
+
+    print("Week number, PRs opened this week, PRs opened this week and still open")
     for k, v in sorted(open_by_week.items()):
-        print(f"{k}, {v}")
+        print(f"{k}, {v['any state']}, {v['still open']}")
 
 
 def main():
