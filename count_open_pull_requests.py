@@ -2,7 +2,9 @@
 Process pr_list.jsonl created by download_pull_requests.py and
 output a CSV of the number of PRs open per day
 """
+import argparse
 import datetime as dt
+from collections import defaultdict
 
 import jsonlines  # pip install jsonlines
 
@@ -23,7 +25,7 @@ def find_oldest(pull_requests: list[dict]) -> tuple[list[dict], str]:
     return pull_requests, oldest
 
 
-def open_per_day(pull_requests: list[dict], oldest: str):
+def open_per_day(pull_requests: list[dict], oldest: str) -> None:
     """
     Find the total number of open pull requests per day
     """
@@ -57,13 +59,46 @@ def open_per_day(pull_requests: list[dict], oldest: str):
         today += delta
 
 
+def opened_per_week(pull_requests: list[dict]) -> None:
+    """
+    Find the number of pull requests opened in each week
+    """
+    open_by_week = defaultdict(int)
+    for pr in pull_requests:
+        # Slice 2022-03-22T08:39:59Z into 2022-03-22 and make dt.date
+        created_date = dt.date.fromisoformat(pr["created_at"][:10])
+        week_str = (
+            f"{created_date.isocalendar().year} "
+            f"w{created_date.isocalendar().week:02}"
+        )
+        open_by_week[week_str] += 1
+
+    print("Week number, PRs opened this week")
+    for k, v in sorted(open_by_week.items()):
+        print(f"{k}, {v}")
+
+
 def main():
+    parser = argparse.ArgumentParser(
+        description=__doc__, formatter_class=argparse.ArgumentDefaultsHelpFormatter
+    )
+    parser.add_argument(
+        "--open_per_day", action="store_true", help=open_per_day.__doc__
+    )
+    parser.add_argument(
+        "--opened_per_week", action="store_true", help=opened_per_week.__doc__
+    )
+    args = parser.parse_args()
+
     with jsonlines.open("pr_list.jsonl") as reader:
         pull_requests = [line for line in reader]
     # print(f"{len(pull_requests)=}")
 
     pull_requests, oldest = find_oldest(pull_requests)
-    open_per_day(pull_requests, oldest)
+    if args.open_per_day:
+        open_per_day(pull_requests, oldest)
+    if args.opened_per_week:
+        opened_per_week(pull_requests)
 
 
 if __name__ == "__main__":
