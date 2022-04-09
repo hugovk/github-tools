@@ -61,3 +61,6 @@ pr_list.jsonl
 
 # count_open_pull_requests.py
 open_prs.csv
+
+*.json
+token.txt
