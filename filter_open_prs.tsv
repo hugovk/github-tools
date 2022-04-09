@@ -1,0 +1,93 @@
+https://bugs.python.org/issue40269	https://github.com/python/cpython/pull/19593	bpo-40269: Fix repr for complex.
+https://bugs.python.org/issue34008	https://github.com/python/cpython/pull/8023	bpo-34206: Improve docs and test coverage for pre-init functions
+https://bugs.python.org/issue23878	https://github.com/python/cpython/pull/15555	bpo-23878: Remove the key parameter of _Py_FindEnvConfigValue()
+https://bugs.python.org/issue34001	https://github.com/python/cpython/pull/8055	bpo-34001: Change handling of SSL protocol bounds with LibreSSL
+https://bugs.python.org/issue26828	https://github.com/python/cpython/pull/14432	bpo-26828: Add __length_hint__() to builtin map iterator
+https://bugs.python.org/issue16270	https://github.com/python/cpython/pull/13951	bpo-37222: Fix for CacheFTPHandler in urllib
+https://bugs.python.org/issue35780	https://github.com/python/cpython/pull/11733	bpo-35780: Add link guards to the lru_cache() C code
+https://bugs.python.org/issue35780	https://github.com/python/cpython/pull/11733	bpo-35780: Add link guards to the lru_cache() C code
+https://bugs.python.org/issue35780	https://github.com/python/cpython/pull/11733	bpo-35780: Add link guards to the lru_cache() C code
+https://bugs.python.org/issue36346	https://github.com/python/cpython/pull/12409	bpo-36346: Prepare for removing the legacy Unicode C API.
+https://bugs.python.org/issue21161	https://github.com/python/cpython/pull/15194	bpo-21161: pdb: default: handle list comprehensions
+https://bugs.python.org/issue38692	https://github.com/python/cpython/pull/25515	bpo-38692: Add audit events to pidfd related functions
+https://bugs.python.org/issue36570	https://github.com/python/cpython/pull/12740	bpo-36570: ftplib retry when passive connection timeouts
+https://bugs.python.org/issue38894	https://github.com/python/cpython/pull/23025	[WIP/RFC] pathlib: revisit error handling
+https://bugs.python.org/issue1539381	https://github.com/python/cpython/pull/8451	bpo-1539381: Implement SpooledTemporaryFile.readinto
+https://bugs.python.org/issue41379	https://github.com/python/cpython/pull/27830	bpo-41379 Clarification on options needed for indentation
+https://bugs.python.org/issue45186	https://github.com/python/cpython/pull/28379	bpo-34093: Produce consistent output from marshal.dumps().
+https://bugs.python.org/issue27484	https://github.com/python/cpython/pull/27959	bpo-28474: Handle unsigned long win32 error codes
+https://bugs.python.org/issue1635741	https://github.com/python/cpython/pull/22242	bpo-41790: update error in documentation
+https://bugs.python.org/issue1635741	https://github.com/python/cpython/pull/23091	bpo-1635741: Prep curses module for multi-phase init
+https://bugs.python.org/issue1635741	https://github.com/python/cpython/pull/23188	bpo-1635741: port pickle to multi-phase init (PEP 489)
+https://bugs.python.org/issue1635741	https://github.com/python/cpython/pull/23304	bpo-1635741: In pickle module, inject module state from class methods
+https://bugs.python.org/issue1635741	https://github.com/python/cpython/pull/23535	bpo-1635741: port _elementtree to multi-phase init (PEP 489)
+https://bugs.python.org/issue40421	https://github.com/python/cpython/pull/32417	bpo-40421: Cleanup PyFrame C API
+https://bugs.python.org/issue22928	https://github.com/python/cpython/pull/15299	bpo-11671: add header validation from http.client to wsgiref.headers.Headers
+https://bugs.python.org/issue41914	https://github.com/python/cpython/pull/28564	bpo-41914: Fix issue running test_pdb inside GNU `screen`
+https://bugs.python.org/issue24665	https://github.com/python/cpython/pull/28136	bpo-12499: support custom len function in textwrap.wrap
+https://bugs.python.org/issue31664	https://github.com/python/cpython/pull/26526	bpo-44309: Add support for yescrypt in crypt.
+https://bugs.python.org/issue43669	https://github.com/python/cpython/pull/28602	bpo-45399: Remove hostflags from PySSLContext
+https://bugs.python.org/issue30693	https://github.com/python/cpython/pull/31713	bpo-46951: Order contents of zipapps
+https://bugs.python.org/issue37629	https://github.com/python/cpython/pull/15955	bpo-37629: Update judgment method for jpeg.
+https://bugs.python.org/issue4489	https://github.com/python/cpython/pull/22968	bpo-4489: tests(tests_shutil): fix comment with check_args_to_onerror
+https://bugs.python.org/issue41134	https://github.com/python/cpython/pull/14464	bpo-36656: Add race-free os.symlink wrapper / helper
+https://bugs.python.org/issue29312	https://github.com/python/cpython/pull/14589	bpo-29312: use METH_FASTCALL for dict.update
+https://bugs.python.org/issue31404	https://github.com/python/cpython/pull/3606	bpo-28411: Remove PyInterpreterState.modules.
+https://bugs.python.org/issue33376	https://github.com/python/cpython/pull/10250	bpo-33376: clear cursor->statement when setting cursor->reset
+https://bugs.python.org/issue4225	https://github.com/python/cpython/pull/23143	bpo-42258: argparse: show choices once per argument
+https://bugs.python.org/issue38076	https://github.com/python/cpython/pull/18038	bpo-38076: Fix crash on shutdown caused by PEP-384ification of _struct
+https://bugs.python.org/issue34788	https://github.com/python/cpython/pull/25824	bpo-44012: IPv6Address.exploded with scope_id
+https://bugs.python.org/issue45516	https://github.com/python/cpython/pull/29174	bpo-45516: improve TraversableResources's documentation
+https://bugs.python.org/issue14191	https://github.com/python/cpython/pull/24367	bpo-42973: argparse: mixing optional and positional
+https://bugs.python.org/issue25198	https://github.com/python/cpython/pull/6665	bpo-33397: IDLE Help: Modifications for font size
+https://bugs.python.org/issue40167	https://github.com/python/cpython/pull/19326	bpo-35037 Fix issue in cython project: Cython files don't compile on Mingw-w64 64-bit
+https://bugs.python.org/issue32810	https://github.com/python/cpython/pull/11166	bpo-32810: Allow accessing the ags_gen and agt_gen attrs of async generators
+https://bugs.python.org/issue35598	https://github.com/python/cpython/pull/11427	bpo-35675: IDLE config_key - separate window and frame classes
+https://bugs.python.org/issue35617	https://github.com/python/cpython/pull/11364	bpo-35617: Fix for unittest discover not working with implicit namespace packages
+https://bugs.python.org/issue35617	https://github.com/python/cpython/pull/11364	bpo-35617: Fix for unittest discover not working with implicit namespace packages
+https://bugs.python.org/issue35617	https://github.com/python/cpython/pull/11364	bpo-35617: Fix for unittest discover not working with implicit namespace packages
+https://bugs.python.org/issue46712	https://github.com/python/cpython/pull/32152	bpo-46712: share more global strings in deepfreeze
+https://bugs.python.org/issue31084	https://github.com/python/cpython/pull/31355	bpo-46755: Don't log stack info twice in QueueHandler
+https://bugs.python.org/issue32367	https://github.com/python/cpython/pull/8802	bpo-34423: Fix check for overflow when casting from a double to integral types.
+https://bugs.python.org/issue39924	https://github.com/python/cpython/pull/18998	bpo-39924 optimize the pathlib.readlink behavior when the readlink is not existed in os module
+https://bugs.python.org/issue34744	https://github.com/python/cpython/pull/9427	bpo-34744 Lib/argparse.py %(flag)s format specifier for argparse.add_argument help string
+https://bugs.python.org/issue46014	https://github.com/python/cpython/pull/32282	bpo-46014: Add docs regarding `functools.singledispatch` changes
+https://bugs.python.org/issue8814	https://github.com/python/cpython/pull/21392	bpo-41231: Make wraps retain type annotations
+https://bugs.python.org/issue10141	https://github.com/python/cpython/pull/23794	bpo-42653: Add constants for isotp.h which is included in Linux >= 5.10
+https://bugs.python.org/issue17636	https://github.com/python/cpython/pull/18347	bpo-39551: mock patch should match behavior of import from when module isn't present in sys.modules
+https://bugs.python.org/issue40260	https://github.com/python/cpython/pull/19549	bpo-40260: fix API regression with file_info mode field
+https://bugs.python.org/issue24120	https://github.com/python/cpython/pull/23025	[WIP/RFC] pathlib: revisit error handling
+https://bugs.python.org/issue41283	https://github.com/python/cpython/pull/21573	bpo-41283: Add missing doc strings and improve docs
+https://bugs.python.org/issue39995	https://github.com/python/cpython/pull/19788	bpo-39995: CLN remove some locks in ProcessPoolExecutor
+https://bugs.python.org/issue37322	https://github.com/python/cpython/pull/25572	[3.9] bpo-37322: Fix ResourceWarning and exception handling in test (GH-25553)
+https://bugs.python.org/issue46415	https://github.com/python/cpython/pull/30642	bpo-46415: Use f-string for ValueError in ipaddress.ip_{address,network,interface} helper functions
+https://bugs.python.org/issue41045	https://github.com/python/cpython/pull/21552	bpo-41411: Document f-strings in library/stdtypes.rst
+https://bugs.python.org/issue25658	https://github.com/python/cpython/pull/4060	bpo-31828: make Py_tss_NEEDS_INIT usable in non-static initialisers
+https://bugs.python.org/issue45865	https://github.com/python/cpython/pull/29698	bpo-45865: Removed inheritance from object in unittest
+https://bugs.python.org/issue39985	https://github.com/python/cpython/pull/19065	bpo-39985: Make string.Formatter with empty field name default to 0
+https://bugs.python.org/issue46576	https://github.com/python/cpython/pull/32382	[3.10] bpo-46576: Speed up test_peg_generator by using a static libra…
+https://bugs.python.org/issue36422	https://github.com/python/cpython/pull/14292	bpo-37302: Add an "onerror" callback parameter to the tempfile.TemporaryDirectory member functions
+https://bugs.python.org/issue40174	https://github.com/python/cpython/pull/19385	bpo-40174: Check when clock_gettime is necessary
+https://bugs.python.org/issue46440	https://github.com/python/cpython/pull/30832	bpo-41255: Prevent exits if `ArgumentParser.exit_on_error` is False
+https://bugs.python.org/issue40361	https://github.com/python/cpython/pull/19649	bpo-40361: Updated condition for darwin/win to fix NotADirectoryError 'xdg-settings' error
+https://bugs.python.org/issue45274	https://github.com/python/cpython/pull/31290	bpo-45274: Fix one race condition Thread.join
+https://bugs.python.org/issue40670	https://github.com/python/cpython/pull/20830	bpo-40670: Improve documentation for timeit function
+https://bugs.python.org/issue43218	https://github.com/python/cpython/pull/24530	bpo-43218: prevent venv creation when target directory contains PATH separator
+https://bugs.python.org/issue22295	https://github.com/python/cpython/pull/24003	[bpo-22295](https://bugs.python.org/issue22295) use `python -m pip` rather than plain `pip` in examples
+https://bugs.python.org/issue40185	https://github.com/python/cpython/pull/31779	bpo-43923: Allow NamedTuple multiple inheritance
+https://bugs.python.org/issue28764	https://github.com/python/cpython/pull/23553	bpo-28764: mailbox.mbox: handle lines with non-ascii more graceful
+https://bugs.python.org/issue37776	https://github.com/python/cpython/pull/17575	bpo-36225: Finalise subinterpreters in Py_FinalizeEx()
+https://bugs.python.org/issue36643	https://github.com/python/cpython/pull/27330	bpo-36643: Unwrap ForwardRefs and string types in dataclasses.fields() result
+https://bugs.python.org/issue35770	https://github.com/python/cpython/pull/11615	bpo-35770: Convert menudefs to dictionary
+https://bugs.python.org/issue31699	https://github.com/python/cpython/pull/4256	bpo-31699: Deadlocks in `concurrent.futures.ProcessPoolExecutor` with unpickling error
+https://bugs.python.org/issue47190	https://github.com/python/cpython/pull/32293	bpo-47190: Initial async tk loop stuff
+https://bugs.python.org/issue39298	https://github.com/python/cpython/pull/31686	bpo-39298: Add BLAKE3 bindings to hashlib.
+https://bugs.python.org/issue42892	https://github.com/python/cpython/pull/24192	bpo-42892 Fix AttributeError in email.message.get_body()
+https://bugs.python.org/issue37435	https://github.com/python/cpython/pull/14432	bpo-26828: Add __length_hint__() to builtin map iterator
+https://bugs.python.org/issue36674	https://github.com/python/cpython/pull/13180	bpo-36674: Stops skipped tests from running in debug mode.
+https://bugs.python.org/issue39881	https://github.com/python/cpython/pull/18817	bpo-32604: Multiple Interpreters in the Stdlib (PEP 554)
+https://bugs.python.org/issue39774	https://github.com/python/cpython/pull/18677	bpo-39774: docs for make package executable
+https://bugs.python.org/issue39355	https://github.com/python/cpython/pull/32175	bpo-39355: WIP: Add _testcppext C++ extension
+https://bugs.python.org/issue39761	https://github.com/python/cpython/pull/18672	bpo-39761: dtrace build fix for Linux and non Linux systems.
+https://bugs.python.org/issue46590	https://github.com/python/cpython/pull/31020	bpo-46590: I suggests to modify Include/object.h in 98 line
+https://bugs.python.org/issue42673	https://github.com/python/cpython/pull/23833	bpo-42673 prevent branch misprediction in round_size (used in rehash)

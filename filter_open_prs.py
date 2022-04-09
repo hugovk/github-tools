@@ -210,4 +210,4 @@ for line in bpo_to_prs.strip().splitlines():
         pr = repo.get_pull(int(pr_number))
         # Still open
         if not pr.closed_at:
-            print(bpo_url, pr.html_url)
+            print(f"{bpo_url}\t{pr.html_url}\t{pr.title}")
