@@ -206,8 +206,8 @@ repo = g.get_repo("python/cpython")
 
 for line in bpo_to_prs.strip().splitlines():
     bpo_url, pr_numbers = line.split(": ")
-    for pr_number in pr_numbers.split(", "):
+    for pr_number in set(pr_numbers.split(", ")):
         pr = repo.get_pull(int(pr_number))
         # Still open
         if not pr.closed_at:
-            print(f"{bpo_url}\t{pr.html_url}\t{pr.title}")
+            print(f"{bpo_url}\t{pr.html_url}\t{pr.title.strip()}")

@@ -5,8 +5,6 @@ https://bugs.python.org/issue34001	https://github.com/python/cpython/pull/8055	b
 https://bugs.python.org/issue26828	https://github.com/python/cpython/pull/14432	bpo-26828: Add __length_hint__() to builtin map iterator
 https://bugs.python.org/issue16270	https://github.com/python/cpython/pull/13951	bpo-37222: Fix for CacheFTPHandler in urllib
 https://bugs.python.org/issue35780	https://github.com/python/cpython/pull/11733	bpo-35780: Add link guards to the lru_cache() C code
-https://bugs.python.org/issue35780	https://github.com/python/cpython/pull/11733	bpo-35780: Add link guards to the lru_cache() C code
-https://bugs.python.org/issue35780	https://github.com/python/cpython/pull/11733	bpo-35780: Add link guards to the lru_cache() C code
 https://bugs.python.org/issue36346	https://github.com/python/cpython/pull/12409	bpo-36346: Prepare for removing the legacy Unicode C API.
 https://bugs.python.org/issue21161	https://github.com/python/cpython/pull/15194	bpo-21161: pdb: default: handle list comprehensions
 https://bugs.python.org/issue38692	https://github.com/python/cpython/pull/25515	bpo-38692: Add audit events to pidfd related functions
@@ -16,9 +14,9 @@ https://bugs.python.org/issue1539381	https://github.com/python/cpython/pull/8451
 https://bugs.python.org/issue41379	https://github.com/python/cpython/pull/27830	bpo-41379 Clarification on options needed for indentation
 https://bugs.python.org/issue45186	https://github.com/python/cpython/pull/28379	bpo-34093: Produce consistent output from marshal.dumps().
 https://bugs.python.org/issue27484	https://github.com/python/cpython/pull/27959	bpo-28474: Handle unsigned long win32 error codes
-https://bugs.python.org/issue1635741	https://github.com/python/cpython/pull/22242	bpo-41790: update error in documentation
 https://bugs.python.org/issue1635741	https://github.com/python/cpython/pull/23091	bpo-1635741: Prep curses module for multi-phase init
 https://bugs.python.org/issue1635741	https://github.com/python/cpython/pull/23188	bpo-1635741: port pickle to multi-phase init (PEP 489)
+https://bugs.python.org/issue1635741	https://github.com/python/cpython/pull/22242	bpo-41790: update error in documentation
 https://bugs.python.org/issue1635741	https://github.com/python/cpython/pull/23304	bpo-1635741: In pickle module, inject module state from class methods
 https://bugs.python.org/issue1635741	https://github.com/python/cpython/pull/23535	bpo-1635741: port _elementtree to multi-phase init (PEP 489)
 https://bugs.python.org/issue40421	https://github.com/python/cpython/pull/32417	bpo-40421: Cleanup PyFrame C API
@@ -43,8 +41,6 @@ https://bugs.python.org/issue25198	https://github.com/python/cpython/pull/6665	b
 https://bugs.python.org/issue40167	https://github.com/python/cpython/pull/19326	bpo-35037 Fix issue in cython project: Cython files don't compile on Mingw-w64 64-bit
 https://bugs.python.org/issue32810	https://github.com/python/cpython/pull/11166	bpo-32810: Allow accessing the ags_gen and agt_gen attrs of async generators
 https://bugs.python.org/issue35598	https://github.com/python/cpython/pull/11427	bpo-35675: IDLE config_key - separate window and frame classes
-https://bugs.python.org/issue35617	https://github.com/python/cpython/pull/11364	bpo-35617: Fix for unittest discover not working with implicit namespace packages
-https://bugs.python.org/issue35617	https://github.com/python/cpython/pull/11364	bpo-35617: Fix for unittest discover not working with implicit namespace packages
 https://bugs.python.org/issue35617	https://github.com/python/cpython/pull/11364	bpo-35617: Fix for unittest discover not working with implicit namespace packages
 https://bugs.python.org/issue46712	https://github.com/python/cpython/pull/32152	bpo-46712: share more global strings in deepfreeze
 https://bugs.python.org/issue31084	https://github.com/python/cpython/pull/31355	bpo-46755: Don't log stack info twice in QueueHandler
