@@ -56,8 +56,8 @@ docs/_build/
 # PyBuilder
 target/
 
-# download_pull_requests.py
-pr_list.jsonl
+# download_issues_prs.py
+*.jsonl
 
 # count_open_pull_requests.py
 open_prs.csv
