@@ -11,7 +11,7 @@ import os
 
 from github import Github  # pip install PyGithub
 
-GITHUB_TOKEN = os.environ["GITHUB_TOKEN"]
+GITHUB_TOKEN = os.environ["GITHUB_TOOLS_TOKEN"]
 OUTPUT_FILE_ISSUES = "issue_list.jsonl"
 OUTPUT_FILE_PRS = "pr_list.jsonl"
 

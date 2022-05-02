@@ -6,7 +6,7 @@ import os
 
 from github import Github
 
-GITHUB_TOKEN = os.environ["GITHUB_TOKEN"]
+GITHUB_TOKEN = os.environ["GITHUB_TOOLS_TOKEN"]
 
 # https://dpaste.com/AF2DKJG8B
 bpo_to_prs = """
