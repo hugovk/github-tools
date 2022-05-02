@@ -9,7 +9,7 @@ import argparse
 import json
 import os
 
-from github import Github
+from github import Github  # pip install PyGithub
 
 GITHUB_TOKEN = os.environ["GITHUB_TOKEN"]
 OUTPUT_FILE_ISSUES = "issue_list.jsonl"
