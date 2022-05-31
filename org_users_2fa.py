@@ -10,46 +10,66 @@ GITHUB_TOKEN = os.environ["GITHUB_TOOLS_REPO_TOKEN"]
 
 g = Github(GITHUB_TOKEN, per_page=100)
 org = g.get_organization("digiaonline")
+all_results = []
 
 
-def summarise(all_: list, disabled_2fa: list) -> None:
+def summarise(all_: list, disabled: list) -> tuple[int, int, str, int, str]:
     number = len(all_)
-    print("All:", number)
     print()
 
-    number_disabled_2fa = len(disabled_2fa)
-    number_enabled_2fa = number - number_disabled_2fa
+    number_disabled = len(disabled)
+    number_enabled = number - number_disabled
+    percent_enabled = f"{number_enabled / number:.0%}"
+    percent_disabled = f"{number_disabled / number:.0%}"
     cprint(
-        f"2FA enabled: {number_enabled_2fa} ({number_enabled_2fa / number:.0%})",
+        f"2FA enabled:  {number_enabled} / {number} ({percent_enabled})",
         "green",
     )
     cprint(
-        f"2FA disabled: {number_disabled_2fa} ({number_disabled_2fa / number:.0%})",
+        f"2FA disabled: {number_disabled} / {number} ({percent_disabled})",
         "red",
     )
-
-    for user in disabled_2fa:
-        print(f"{user.login}\t{user.name}")
     print()
 
+    for user in disabled:
+        print(
+            f"{user.login}"
+            f"\t{user.name if user.name else ''}"
+            f"\t{user.company if user.company else ''}"
+        )
+    print()
+    return (
+        number,
+        number_enabled,
+        percent_enabled,
+        number_disabled,
+        percent_disabled,
+    )
 
-print("MEMBERS")
+
+print()
+cprint("MEMBERS", attrs=["bold"])
 
 members = list(org.get_members())
-members_disabled_2fa = list(org.get_members("2fa_disabled"))
+members_disabled = list(org.get_members("2fa_disabled"))
 
-summarise(members, members_disabled_2fa)
+results = summarise(members, members_disabled)
+all_results.extend(results)
 
-print("COLLABORATORS")
+cprint("COLLABORATORS", attrs=["bold"])
 
 collaborators = list(org.get_outside_collaborators())
-collaborators_disabled_2fa = list(org.get_outside_collaborators("2fa_disabled"))
+collaborators_disabled = list(org.get_outside_collaborators("2fa_disabled"))
 
-summarise(collaborators, collaborators_disabled_2fa)
+results = summarise(collaborators, collaborators_disabled)
+all_results.extend(results)
 
-print("COMBINED")
+cprint("COMBINED", attrs=["bold"])
 
 combined = members + collaborators
-combined_disabled_2fa = members_disabled_2fa + collaborators_disabled_2fa
+combined_disabled = members_disabled + collaborators_disabled
 
-summarise(combined, combined_disabled_2fa)
+results = summarise(combined, combined_disabled)
+all_results.extend(results)
+
+print("\t".join(str(x) for x in all_results))
