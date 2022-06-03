@@ -69,6 +69,9 @@ cprint("COMBINED", attrs=["bold"])
 combined = members + collaborators
 combined_disabled = members_disabled + collaborators_disabled
 
+# Sort by login
+combined_disabled = sorted(combined_disabled, key=lambda user: user.login.lower())
+
 results = summarise(combined, combined_disabled)
 all_results.extend(results)
 
