@@ -72,4 +72,4 @@ combined_disabled = members_disabled + collaborators_disabled
 results = summarise(combined, combined_disabled)
 all_results.extend(results)
 
-print("\t".join(str(x) for x in all_results))
+print(*all_results, sep="\t")
