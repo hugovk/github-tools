@@ -1,4 +1,6 @@
+feedparser
 jsonlines
 PyGithub
 requests
+rich
 termcolor
