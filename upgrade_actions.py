@@ -11,7 +11,7 @@ from functools import cache
 from typing import Iterable
 
 import feedparser  # pip install feedparser
-from termcolor import colored
+from termcolor import colored, cprint
 
 try:
     from rich.logging import RichHandler
@@ -37,7 +37,17 @@ def update_tag(repo: str, old_version: str) -> str:
     tags = get_repo_tags(repo)
     logging.info(tags)
     same_length_tags = [tag for tag in tags if len(tag) == len(old_version)]
-    return same_length_tags[0]
+    try:
+        tag = same_length_tags[0]
+    except IndexError:
+        cprint(
+            f"No upgrade found for {repo}.\n"
+            f"  Old version: {old_version}\n"
+            f"  New tags: {tags}",
+            "red",
+        )
+        tag = None
+    return tag
 
 
 def color_diff(diff: Iterable[str]) -> Iterable[str]:
@@ -62,7 +72,7 @@ def do_file(filename: str, dry_run: bool) -> None:
             repo = m[2]
             version = m[3]
             new_version = update_tag(repo, version)
-            if version != new_version:
+            if new_version and version != new_version:
                 changes += 1
                 new_line = line.replace(f"{repo}@{version}", f"{repo}@{new_version}")
                 new_lines.append(new_line)
@@ -79,7 +89,7 @@ def do_file(filename: str, dry_run: bool) -> None:
         )
         print("".join(diff))
     else:
-        print(f"no change for {filename}")
+        cprint(f"no change for {filename}", "yellow")
 
     if changes and not dry_run:
         with open(filename, "w") as f:
