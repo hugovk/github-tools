@@ -41,7 +41,7 @@ def update_tag(repo: str, old_version: str) -> str:
         tag = same_length_tags[0]
     except IndexError:
         cprint(
-            f"No upgrade found for {repo}.\n"
+            f"No upgrade found for https://github.com/{repo}\n"
             f"  Old version: {old_version}\n"
             f"  New tags: {tags}",
             "red",
