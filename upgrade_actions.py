@@ -8,6 +8,7 @@ import logging
 import os
 import re
 from functools import cache
+from pathlib import Path
 from typing import Iterable
 
 import feedparser  # pip install feedparser
@@ -100,12 +101,10 @@ def main(args) -> None:
     if os.path.isfile(args.input):
         do_file(args.input, args.dry_run)
     else:
-        for filename in os.listdir(args.input):
-            filename = os.path.join(args.input, filename)
-            if filename.endswith((".yml", ".yaml")) and os.path.isfile(filename):
-                logging.info(filename)
-                do_file(filename, args.dry_run)
-                print()
+        for path in Path(args.input).rglob("*.y*ml"):
+            logging.info(path)
+            do_file(str(path), args.dry_run)
+            print()
 
 
 if __name__ == "__main__":
