@@ -139,5 +139,5 @@ if __name__ == "__main__":
         logging.basicConfig(level=args.loglevel, format="%(message)s")
     main(args)
 
-    logging.info(update_tag.cache_info())
-    logging.info(get_repo_tags.cache_info())
+    logging.info(f"update_tag:\t{update_tag.cache_info()}")
+    logging.info(f"get_repo_tags:\t{get_repo_tags.cache_info()}")
