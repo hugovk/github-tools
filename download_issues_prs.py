@@ -16,7 +16,7 @@ OUTPUT_FILE_ISSUES = "issue_list.jsonl"
 OUTPUT_FILE_PRS = "pr_list.jsonl"
 
 
-def download(label, output_file, repo_get_fn):
+def download(label: str, output_file: str, repo_get_fn) -> None:
     # Output file is 514 MB for 31,984 PRs!
     # Output file is 525 MB for 32,611 PRs! (16 mins)
     # Output file is 387 MB for 91,726 issues! (16 mins)
@@ -27,7 +27,7 @@ def download(label, output_file, repo_get_fn):
             f.write("\n")
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
         "-i",
