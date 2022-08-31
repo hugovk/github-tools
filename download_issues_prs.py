@@ -22,9 +22,11 @@ def download(label: str, output_file: str, repo_get_fn) -> None:
     # Output file is 387 MB for 91,726 issues! (16 mins)
     with open(output_file, "w", encoding="utf-8") as f:
         for i, item in enumerate(repo_get_fn(state="all")):
-            print(f"Retrieved {i} {label}")
+            if i % 10 == 0:
+                print(f"Retrieved {i} {label}", end="\r")
             f.write(json.dumps(item._rawData))
             f.write("\n")
+    print()
 
 
 def main() -> None:
