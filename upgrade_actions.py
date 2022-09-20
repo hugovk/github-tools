@@ -7,6 +7,7 @@ import difflib
 import logging
 import os
 import re
+import sys
 from functools import cache
 from pathlib import Path
 from typing import Iterable
@@ -97,17 +98,7 @@ def do_file(filename: str, dry_run: bool) -> None:
             f.writelines(new_lines)
 
 
-def main(args) -> None:
-    if os.path.isfile(args.input):
-        do_file(args.input, args.dry_run)
-    else:
-        for path in Path(args.input).rglob("*.y*ml"):
-            logging.info(path)
-            do_file(str(path), args.dry_run)
-            print()
-
-
-if __name__ == "__main__":
+def main() -> None:
     parser = argparse.ArgumentParser(
         description=__doc__,
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
@@ -137,7 +128,18 @@ if __name__ == "__main__":
         )
     else:
         logging.basicConfig(level=args.loglevel, format="%(message)s")
-    main(args)
+
+    if os.path.isfile(args.input):
+        do_file(args.input, args.dry_run)
+    else:
+        for path in Path(args.input).rglob("*.y*ml"):
+            logging.info(path)
+            do_file(str(path), args.dry_run)
+            print()
 
     logging.info(f"update_tag:\t{update_tag.cache_info()}")
     logging.info(f"get_repo_tags:\t{get_repo_tags.cache_info()}")
+
+
+if __name__ == "__main__":
+    sys.exit(main())
