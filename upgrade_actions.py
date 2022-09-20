@@ -21,7 +21,7 @@ except ImportError:
     RichHandler = None
     pass
 
-USES_REGEX = re.compile(r"(- )?uses: ([a-z-]+/[a-z-]+)@([a-z0-9.]+)")
+USES_REGEX = re.compile(r"(- )?uses: \"?([a-z-]+/[a-z-]+)@([a-z0-9.]+)\"?")
 
 
 @cache
