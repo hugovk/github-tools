@@ -39,6 +39,9 @@ def update_tag(repo: str, old_version: str) -> str:
     tags = get_repo_tags(repo)
     logging.info(tags)
     same_length_tags = [tag for tag in tags if len(tag) == len(old_version)]
+    logging.info(same_length_tags)
+    same_length_tags.sort(reverse=True)
+    logging.info(same_length_tags)
     try:
         tag = same_length_tags[0]
     except IndexError:
