@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Update BPO links to GH issues in a file
+Update BPO links to GH issues in a file or directory of files
 """
 import argparse
 import difflib
