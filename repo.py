@@ -4,25 +4,25 @@ Open the website for this repo (or upstream).
 """
 import argparse
 import os
-import sys
 
 import git  # pip install GitPython
-from termcolor import cprint
+from termcolor import cprint  # pip install termcolor
 
-if sys.version_info < (3, 9):
-    # From https://peps.python.org/pep-0616/#specification
-    def removeprefix(self: str, prefix: str, /) -> str:
-        if self.startswith(prefix):
-            return self[len(prefix) :]
-        else:
-            return self[:]
 
-    def removesuffix(self: str, suffix: str, /) -> str:
-        # suffix='' should not call self[:-0].
-        if suffix and self.endswith(suffix):
-            return self[: -len(suffix)]
-        else:
-            return self[:]
+# From https://peps.python.org/pep-0616/#specification
+def removeprefix(self: str, prefix: str) -> str:
+    if self.startswith(prefix):
+        return self[len(prefix) :]
+    else:
+        return self[:]
+
+
+def removesuffix(self: str, suffix: str) -> str:
+    # suffix='' should not call self[:-0].
+    if suffix and self.endswith(suffix):
+        return self[: -len(suffix)]
+    else:
+        return self[:]
 
 
 def main(args):
@@ -40,12 +40,12 @@ def main(args):
     # ->
     # https://github.com/user/repo.git
     if url.startswith("git@"):
-        url = "https://" + url.removeprefix("git@").replace(":", "/")
+        url = "https://" + removeprefix(url, "git@").replace(":", "/")
 
     # https://github.com/user/repo.git
     # ->
     # https://github.com:user/repo
-    url = url.removesuffix(".git")
+    url = removesuffix(url, ".git")
 
     if args.tab:
         url += "/" + args.tab
