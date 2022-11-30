@@ -4,9 +4,25 @@ Open the website for this repo (or upstream).
 """
 import argparse
 import os
+import sys
 
 import git  # pip install GitPython
 from termcolor import cprint
+
+if sys.version_info < (3, 9):
+    # From https://peps.python.org/pep-0616/#specification
+    def removeprefix(self: str, prefix: str, /) -> str:
+        if self.startswith(prefix):
+            return self[len(prefix) :]
+        else:
+            return self[:]
+
+    def removesuffix(self: str, suffix: str, /) -> str:
+        # suffix='' should not call self[:-0].
+        if suffix and self.endswith(suffix):
+            return self[: -len(suffix)]
+        else:
+            return self[:]
 
 
 def main(args):
