@@ -1,16 +1,14 @@
 """
 List users in an org with 2FA disabled
 """
+import argparse
 import os
+import sys
 
-from github import Github
-from termcolor import cprint
+from github import Github  # pip install PyGithub
+from termcolor import cprint  # pip install termcolor
 
 GITHUB_TOKEN = os.environ["GITHUB_TOOLS_REPO_TOKEN"]
-
-g = Github(GITHUB_TOKEN, per_page=100)
-org = g.get_organization("digiaonline")
-all_results = []
 
 
 def summarise(all_: list, disabled: list) -> tuple[int, int, str, int, str]:
@@ -47,32 +45,48 @@ def summarise(all_: list, disabled: list) -> tuple[int, int, str, int, str]:
     )
 
 
-print()
-cprint("MEMBERS", attrs=["bold"])
+def main() -> None:
+    parser = argparse.ArgumentParser(
+        description=__doc__,
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    )
+    parser.add_argument("org", help="GitHub organisation to check")
+    args = parser.parse_args()
 
-members = list(org.get_members())
-members_disabled = list(org.get_members("2fa_disabled"))
+    g = Github(GITHUB_TOKEN, per_page=100)
+    org = g.get_organization(args.org)
+    all_results = []
 
-results = summarise(members, members_disabled)
-all_results.extend(results)
+    print()
+    cprint("MEMBERS", attrs=["bold"])
 
-cprint("COLLABORATORS", attrs=["bold"])
+    members = list(org.get_members())
+    members_disabled = list(org.get_members("2fa_disabled"))
 
-collaborators = list(org.get_outside_collaborators())
-collaborators_disabled = list(org.get_outside_collaborators("2fa_disabled"))
+    results = summarise(members, members_disabled)
+    all_results.extend(results)
 
-results = summarise(collaborators, collaborators_disabled)
-all_results.extend(results)
+    cprint("COLLABORATORS", attrs=["bold"])
 
-cprint("COMBINED", attrs=["bold"])
+    collaborators = list(org.get_outside_collaborators())
+    collaborators_disabled = list(org.get_outside_collaborators("2fa_disabled"))
 
-combined = members + collaborators
-combined_disabled = members_disabled + collaborators_disabled
+    results = summarise(collaborators, collaborators_disabled)
+    all_results.extend(results)
 
-# Sort by login
-combined_disabled = sorted(combined_disabled, key=lambda user: user.login.lower())
+    cprint("COMBINED", attrs=["bold"])
 
-results = summarise(combined, combined_disabled)
-all_results.extend(results)
+    combined = members + collaborators
+    combined_disabled = members_disabled + collaborators_disabled
 
-print(*all_results, sep="\t")
+    # Sort by login
+    combined_disabled = sorted(combined_disabled, key=lambda user: user.login.lower())
+
+    results = summarise(combined, combined_disabled)
+    all_results.extend(results)
+
+    print(*all_results, sep="\t")
+
+
+if __name__ == "__main__":
+    sys.exit(main())
