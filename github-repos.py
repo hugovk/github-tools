@@ -91,7 +91,6 @@ def get_repos(user, year):
 
 
 if __name__ == "__main__":
-
     timestamp()
 
     parser = argparse.ArgumentParser(
