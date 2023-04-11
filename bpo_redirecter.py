@@ -9,6 +9,7 @@ import os
 import re
 import sys
 from functools import cache
+from pathlib import Path
 from typing import Iterable
 
 import httpx  # pip install httpx
@@ -58,7 +59,7 @@ def do_file(filename: str, dry_run: bool = False) -> None:
         changes = 0
         new_lines = []
         for line in old_lines:
-            print(line.strip())
+            # print(line.strip())
             matches = 0
             m = BPO_URL_REGEX.search(line.strip())
             if m:
@@ -119,11 +120,10 @@ def do_file_or_path(file_or_path: str, dry_run: bool = False) -> None:
     if os.path.isfile(file_or_path):
         do_file(file_or_path, dry_run)
     else:
-        for filename in os.listdir(file_or_path):
-            filename = os.path.join(file_or_path, filename)
-            if filename.endswith((".txt", ".rst")) and os.path.isfile(filename):
-                logging.info(filename)
-                do_file(filename, dry_run)
+        for p in Path(file_or_path).rglob("*"):
+            if p.suffix in (".txt", ".rst") and p.is_file():
+                logging.info(p)
+                do_file(str(p), dry_run)
                 print()
 
 
