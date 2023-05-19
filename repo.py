@@ -48,6 +48,8 @@ def main(args):
     url = removesuffix(url, ".git")
 
     if args.tab:
+        if "gitlab" in url:
+            url += "/-"
         url += "/" + args.tab
 
     cmd = "open " + url
