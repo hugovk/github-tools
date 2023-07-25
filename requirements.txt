@@ -1,6 +1,7 @@
 feedparser
 GitPython
 jsonlines
+keyring
 PyGithub
 requests
 rich

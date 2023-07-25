@@ -1,14 +1,20 @@
 """
 List users in an org with 2FA disabled
+
+First create a GitHub token with repo scope and save to keyring:
+$v python -m pip install -U keyring
+$ keyring set github-tools github-token
+Password for 'github-token' in 'github-tools':
 """
 import argparse
-import os
 import sys
 
+import keyring
 from github import Github  # pip install PyGithub
 from termcolor import cprint  # pip install termcolor
 
-GITHUB_TOKEN = os.environ["GITHUB_TOOLS_REPO_TOKEN"]
+# GITHUB_TOKEN = os.environ["GITHUB_TOOLS_REPO_TOKEN"]
+GITHUB_TOKEN = keyring.get_password("github-tools", "github-token")
 
 
 def summarise(all_: list, disabled: list) -> tuple[int, int, str, int, str]:
@@ -53,6 +59,8 @@ def main() -> None:
     parser.add_argument("org", help="GitHub organisation to check")
     args = parser.parse_args()
 
+    if not GITHUB_TOKEN:
+        sys.exit("Error: GitHub token missing")
     g = Github(GITHUB_TOKEN, per_page=100)
     org = g.get_organization(args.org)
     all_results = []
