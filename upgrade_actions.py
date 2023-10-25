@@ -76,6 +76,9 @@ def do_file(filename: str, dry_run: bool) -> None:
         if m:
             repo = m[2]
             version = m[3]
+            if repo == "pypa/gh-action-pypi-publish" and version == "release":
+                logging.info(f"{repo}'s '{version}' is a branch not tag, skipping")
+                continue
             new_version = update_tag(repo, version)
             if new_version and version != new_version:
                 changes += 1
