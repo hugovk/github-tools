@@ -77,7 +77,7 @@ def do_file(filename: str, dry_run: bool) -> None:
             repo = m[2]
             version = m[3]
             if repo == "pypa/gh-action-pypi-publish" and version == "release":
-                logging.info(f"{repo}'s '{version}' is a branch not tag, skipping")
+                logging.info("%s's '%s' is a branch not tag, skipping", repo, version)
                 continue
             new_version = update_tag(repo, version)
             if new_version and version != new_version:
@@ -143,8 +143,8 @@ def main() -> None:
             do_file(str(path), args.dry_run)
             print()
 
-    logging.info(f"update_tag:\t{update_tag.cache_info()}")
-    logging.info(f"get_repo_tags:\t{get_repo_tags.cache_info()}")
+    logging.info("update_tag:\t%s", update_tag.cache_info())
+    logging.info("get_repo_tags:\t%s", get_repo_tags.cache_info())
 
 
 if __name__ == "__main__":
