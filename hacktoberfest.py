@@ -4,6 +4,8 @@ Download all the diffs of PRs made during Hacktoberfest
 You can then run `diffstat /tmp/hacktoberfest/*.diff` to get a summary:
     714 files changed, 9843 insertions(+), 13719 deletions(-)
 """
+from __future__ import annotations
+
 import argparse
 import datetime
 import os

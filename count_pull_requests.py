@@ -2,6 +2,8 @@
 Process pr_list.jsonl created by download_pull_requests.py and
 output a CSV of the number of PRs open per day
 """
+from __future__ import annotations
+
 import argparse
 import datetime as dt
 from collections import defaultdict

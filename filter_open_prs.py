@@ -2,6 +2,8 @@
 Given a list of BPO issues and open PRs, containing some false positives,
 check which PRs are really still open using the GitHub API.
 """
+from __future__ import annotations
+
 import os
 
 from github import Github

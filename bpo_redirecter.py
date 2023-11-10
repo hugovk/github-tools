@@ -2,6 +2,8 @@
 """
 Update BPO links to GH issues in a file or directory of files
 """
+from __future__ import annotations
+
 import argparse
 import difflib
 import logging

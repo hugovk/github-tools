@@ -2,6 +2,8 @@
 Process pr_list.jsonl created by download_pull_requests.py and
 find time from open to merge in days
 """
+from __future__ import annotations
+
 import datetime as dt
 
 import jsonlines  # pip install jsonlines

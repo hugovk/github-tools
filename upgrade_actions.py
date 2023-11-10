@@ -2,6 +2,8 @@
 """
 Upgrade GitHub Actions versions in workflow file or directory
 """
+from __future__ import annotations
+
 import argparse
 import difflib
 import logging

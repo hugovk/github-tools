@@ -1,6 +1,8 @@
 """
 List users in an org with 2FA disabled
 """
+from __future__ import annotations
+
 import argparse
 import os
 import sys

@@ -2,6 +2,8 @@
 """
 Find which of my PRs have merge conflicts.
 """
+from __future__ import annotations
+
 import argparse
 import datetime
 import sys
@@ -93,8 +95,8 @@ if __name__ == "__main__":
     # https://developer.github.com/v3/search/#search-issues
 
     start_url = (
-        "https://api.github.com/search/issues?q=is:pr+author:{author}"
-        "+sort:updated-asc+is:open".format(author=args.author)
+        f"https://api.github.com/search/issues?q=is:pr+author:{args.author}"
+        "+sort:updated-asc+is:open"
     )
     print(start_url)
 

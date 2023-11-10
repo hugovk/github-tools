@@ -2,6 +2,8 @@
 """
 Open the website for this repo (or upstream).
 """
+from __future__ import annotations
+
 import argparse
 import os
 

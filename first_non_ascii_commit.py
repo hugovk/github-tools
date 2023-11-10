@@ -1,6 +1,8 @@
 """
 Find first and total commits with non-ASCII messages and authors
 """
+from __future__ import annotations
+
 import time
 
 from git import Repo  # pip install GitPython
