@@ -94,14 +94,16 @@ def check_issues(start: int = 1, number: int = 100, dry_run: bool = False) -> No
 
     print()
     print(f"Found {len(candidates)} candidates for closing")
-    cmd = "open "
-    for issue in candidates:
-        print(issue.number, issue.html_url)
-        cmd += f"{issue.html_url} "
-    print()
-    print(cmd)
-    if not dry_run:
-        os.system(cmd)
+
+    if candidates:
+        cmd = "open "
+        for issue in candidates:
+            print(issue.number, issue.html_url)
+            cmd += f"{issue.html_url} "
+        print()
+        print(cmd)
+        if not dry_run:
+            os.system(cmd)
 
 
 def main() -> None:
