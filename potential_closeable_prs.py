@@ -116,7 +116,7 @@ def main() -> None:
         "-n", "--number", default=100, type=int, help="number of issues to check"
     )
     parser.add_argument(
-        "-n", "--dry-run", action="store_true", help="Show but don't open issues"
+        "-x", "--dry-run", action="store_true", help="Show but don't open issues"
     )
     args = parser.parse_args()
 
