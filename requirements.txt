@@ -1,4 +1,5 @@
 feedparser
+ghapi
 GitPython
 jsonlines
 PyGithub
