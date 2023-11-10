@@ -81,12 +81,16 @@ def check_issue(api: GhApi, issue: Issue) -> list[Issue]:
     return candidates
 
 
-def check_issues(start: int = 1, number: int = 100) -> list[Issue]:
+def check_issues(
+    start: int = 1, number: int = 100, author: str | None = None
+) -> list[Issue]:
     api = GhApi(owner="python", repo="cpython", token=GITHUB_TOKEN)
 
     candidates = []
     issue_count = 0
-    for page in paged(api.issues.list_for_repo, state="open", per_page=100):
+    for page in paged(
+        api.issues.list_for_repo, state="open", creator=author, per_page=100
+    ):
         for issue in page:
             if issue.html_url.startswith("https://github.com/python/cpython/pull/"):
                 continue
@@ -116,13 +120,14 @@ def main() -> None:
     parser.add_argument(
         "-n", "--number", default=100, type=int, help="number of issues to check"
     )
+    parser.add_argument("-a", "--author", help="issue author, blank for any")
     parser.add_argument(
         "-x", "--dry-run", action="store_true", help="show but don't open issues"
     )
     args = parser.parse_args()
 
     # Find
-    candidates = check_issues(args.start, args.number)
+    candidates = check_issues(args.start, args.number, args.author)
 
     # Report
     print()
