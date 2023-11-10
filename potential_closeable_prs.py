@@ -19,7 +19,7 @@ def check_issues(start: int = 1, number: int = 100, dry_run: bool = False) -> No
 
     candidates = []
     issue_count = 0
-    for i, issue in enumerate(repo.get_issues(state="open")):
+    for issue in repo.get_issues(state="open"):
         if issue.html_url.startswith("https://github.com/python/cpython/pull/"):
             continue
 
@@ -46,7 +46,7 @@ def check_issues(start: int = 1, number: int = 100, dry_run: bool = False) -> No
         <!-- /gh-linked-prs -->
         """
 
-        if "gh-linked-prs" in issue.body:
+        if issue.body and "gh-linked-prs" in issue.body:
             in_linked_prs_section = False
             linked_prs = []
             states = []
