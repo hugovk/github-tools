@@ -17,7 +17,7 @@ Issue: TypeAlias = dict[str, Any]
 GITHUB_TOKEN = os.environ["GITHUB_TOOLS_TOKEN"]
 
 
-def check_issue(api: GhApi, issue: Issue, dry_run: bool = True) -> list[Issue]:
+def check_issue(api: GhApi, issue: Issue) -> list[Issue]:
     """
     Look for a chunk like this, collect the PRs:
 
@@ -71,21 +71,18 @@ def check_issue(api: GhApi, issue: Issue, dry_run: bool = True) -> list[Issue]:
     if all(state == "closed" for state in states):
         print("[red]*** ALL PRS CLOSED ***[/red]")
         candidates.append(issue)
-        open_url(issue.html_url, dry_run)
     elif all(state == "merged" for state in states):
         print("[purple]*** ALL PRS MERGED ***[/purple]")
         candidates.append(issue)
-        open_url(issue.html_url, dry_run)
     elif all(state in ("closed", "merged") for state in states):
         print("*** ALL PRS [red]CLOSED[/red] OR [purple]MERGED[/purple] ***")
         candidates.append(issue)
-        open_url(issue.html_url, dry_run)
 
     return candidates
 
 
 def check_issues(
-    start: int = 1, number: int = 100, author: str | None = None, dry_run: bool = True
+    start: int = 1, number: int = 100, author: str | None = None
 ) -> list[Issue]:
     api = GhApi(owner="python", repo="cpython", token=GITHUB_TOKEN)
 
@@ -104,20 +101,12 @@ def check_issues(
             if issue_count < start:
                 continue
 
-            candidates.extend(check_issue(api, issue, dry_run))
+            candidates.extend(check_issue(api, issue))
 
             if issue_count >= start + number - 1:
                 return candidates
 
     return candidates
-
-
-def open_url(url: str, dry_run: bool = True) -> None:
-    cmd = f"open {url}"
-    print()
-    print(cmd)
-    if not dry_run:
-        os.system(cmd)
 
 
 def main() -> None:
@@ -138,15 +127,21 @@ def main() -> None:
     args = parser.parse_args()
 
     # Find
-    candidates = check_issues(args.start, args.number, args.author, args.dry_run)
+    candidates = check_issues(args.start, args.number, args.author)
 
     # Report
     print()
     print(f"Found {len(candidates)} candidates for closing")
 
     if candidates:
+        cmd = "open "
         for issue in candidates:
             print(issue.number, issue.html_url)
+            cmd += f"{issue.html_url} "
+        print()
+        print(cmd)
+        if not args.dry_run:
+            os.system(cmd)
 
 
 if __name__ == "__main__":
