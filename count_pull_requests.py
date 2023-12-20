@@ -135,7 +135,7 @@ def main():
     args = parser.parse_args()
 
     with jsonlines.open("pr_list.jsonl") as reader:
-        pull_requests = [line for line in reader]
+        pull_requests = list(reader)
     # print(f"{len(pull_requests)=}")
 
     pull_requests, oldest = find_oldest(pull_requests)

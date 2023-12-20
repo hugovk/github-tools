@@ -15,7 +15,7 @@ except ImportError:
 
 
 with jsonlines.open("pr_list.jsonl") as reader:
-    pull_requests = [line for line in reader]
+    pull_requests = list(reader)
 # print(f"Total PRs: {len(pull_requests):,}")
 
 today = dt.datetime.today()
