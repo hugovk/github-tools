@@ -82,14 +82,44 @@ def check_issue(api: GhApi, issue: Issue) -> list[Issue]:
 
 
 def check_issues(
-    start: int = 1, number: int = 100, author: str | None = None
+    start: int = 1,
+    number: int = 100,
+    author: str | None = None,
+    sort_by: str = "newest",
 ) -> list[Issue]:
     api = GhApi(owner="python", repo="cpython", token=GITHUB_TOKEN)
+
+    sort = "created"
+    direction = "desc"
+    match sort_by:
+        case "newest":
+            sort = "created"
+            direction = "desc"
+        case "oldest":
+            sort = "created"
+            direction = "asc"
+        case "most-commented":
+            sort = "comments"
+            direction = "desc"
+        case "least-commented":
+            sort = "comments"
+            direction = "asc"
+        case "recently-updated":
+            sort = "updated"
+            direction = "desc"
+        case "least-recently-updated":
+            sort = "updated"
+            direction = "asc"
 
     candidates = []
     issue_count = 0
     for page in paged(
-        api.issues.list_for_repo, state="open", creator=author, per_page=100
+        api.issues.list_for_repo,
+        state="open",
+        creator=author,
+        sort=sort,
+        direction=direction,
+        per_page=100,
     ):
         for issue in page:
             if issue.html_url.startswith("https://github.com/python/cpython/pull/"):
@@ -122,12 +152,25 @@ def main() -> None:
     )
     parser.add_argument("-a", "--author", help="issue author, blank for any")
     parser.add_argument(
+        "--sort",
+        default="newest",
+        choices=(
+            "newest",
+            "oldest",
+            "most-commented",
+            "least-commented",
+            "recently-updated",
+            "least-recently-updated",
+        ),
+        help="Sort by",
+    )
+    parser.add_argument(
         "-x", "--dry-run", action="store_true", help="show but don't open issues"
     )
     args = parser.parse_args()
 
     # Find
-    candidates = check_issues(args.start, args.number, args.author)
+    candidates = check_issues(args.start, args.number, args.author, args.sort)
 
     # Report
     print()
