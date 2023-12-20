@@ -2,6 +2,7 @@ feedparser
 ghapi
 GitPython
 jsonlines
+prettytable
 PyGithub
 requests
 rich
