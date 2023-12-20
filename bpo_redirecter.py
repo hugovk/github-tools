@@ -63,42 +63,44 @@ def do_file(filename: str, dry_run: bool = False) -> None:
         for line in old_lines:
             # print(line.strip())
             matches = 0
-            m = BPO_URL_REGEX.search(line.strip())
-            if m:
+            ms = BPO_URL_REGEX.findall(line.strip())
+            new_line = line
+            for m in ms:
                 logging.info("Old line:\t%s", line.rstrip())
-                bpo_link = m[0]
-                logging.info("BPO link:\t%s", bpo_link)
-                bpo_number = int(m[1])
+                # bpo_link = f"https://bugs.python.org/issue{m}"
+                # logging.info("BPO link:\t%s", bpo_link)
+                bpo_number = int(m)
                 logging.info("BPO number:\t%d", bpo_number)
 
                 gh_link = redirect(client, bpo_number)
-                new_line = BPO_URL_REGEX.sub(gh_link, line)
+                new_line = BPO_URL_REGEX.sub(gh_link, new_line, count=1)
                 logging.info("New line:\t%s", new_line.rstrip())
 
-                if line != new_line:
-                    changes += 1
-                    matches += 1
-                    new_lines.append(new_line)
+            if line != new_line:
+                changes += 1
+                matches += 1
+                new_lines.append(new_line)
 
-            m = BPO_ROLE_REGEX.search(line.strip())
-            if m:
+            ms = BPO_ROLE_REGEX.findall(line.strip())
+            new_line = line
+            for m in ms:
                 logging.info("Old line:\t%s", line.rstrip())
-                bpo_link = m[0]
-                logging.info("BPO link:\t%s", bpo_link)
-                bpo_number = int(m[1])
+                # bpo_role = f":issue:`{m}`"
+                # logging.info("BPO link:\t%s", bpo_role)
+                bpo_number = int(m)
                 logging.info("BPO number:\t%d", bpo_number)
 
                 gh_link = redirect(client, bpo_number)
                 gh_number = gh_link.split("/")[-1]
                 new_role = f":gh:`{gh_number}`"
                 logging.info("New role:\t%s", new_role)
-                new_line = BPO_ROLE_REGEX.sub(new_role, line)
+                new_line = BPO_ROLE_REGEX.sub(new_role, new_line, count=1)
                 logging.info("New line:\t%s", new_line.rstrip())
 
-                if line != new_line:
-                    changes += 1
-                    matches += 1
-                    new_lines.append(new_line)
+            if line != new_line:
+                changes += 1
+                matches += 1
+                new_lines.append(new_line)
 
             if matches == 0:
                 new_lines.append(line)
