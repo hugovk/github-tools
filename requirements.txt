@@ -4,6 +4,7 @@ GitPython
 jsonlines
 prettytable
 PyGithub
+pytest
 requests
 rich
 termcolor
