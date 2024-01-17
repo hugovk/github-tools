@@ -57,6 +57,14 @@ def do_file(filename: str, dry_run: bool = False) -> None:
     with open(filename) as f:
         old_lines = f.readlines()
 
+    new_lines = do_lines(old_lines, filename)
+
+    if not dry_run and new_lines != old_lines:
+        with open(filename, "w") as f:
+            f.writelines(new_lines)
+
+
+def do_lines(old_lines: list[str], filename: str) -> list[str]:
     with httpx_cache.Client(cache=httpx_cache.FileCache()) as client:
         changes = 0
         new_lines = []
@@ -115,9 +123,10 @@ def do_file(filename: str, dry_run: bool = False) -> None:
         else:
             cprint(f"no change for {filename}", "yellow")
 
-        if changes and not dry_run:
-            with open(filename, "w") as f:
-                f.writelines(new_lines)
+        if changes:
+            return new_lines
+
+        return old_lines
 
 
 def do_file_or_path(file_or_path: str, dry_run: bool = False) -> None:

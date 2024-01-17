@@ -1,9 +1,13 @@
 feedparser
 ghapi
 GitPython
+httpx
+httpx_cache
 jsonlines
 prettytable
 PyGithub
+pytest
+pytest-cov
 requests
 rich
 termcolor
