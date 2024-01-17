@@ -1,6 +1,7 @@
 feedparser
 ghapi
 GitPython
+httpx
 jsonlines
 prettytable
 PyGithub
