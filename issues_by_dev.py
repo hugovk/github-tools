@@ -7,6 +7,7 @@ import argparse
 import csv
 import os
 from collections import Counter
+from itertools import chain
 from typing import Any, NamedTuple, TypeAlias
 
 import requests  # pip install requests
@@ -62,12 +63,25 @@ def main() -> None:
     parser.add_argument("--limit", type=int, help="Limit to this number of usernames")
     args = parser.parse_args()
 
+    # https://docs.github.com/en/rest/orgs/members?apiVersion=2022-11-28#list-organization-members
+    api = GhApi(owner="python", repo="cpython", token=GITHUB_TOKEN)
+    org_members = [
+        member.login
+        for member in chain.from_iterable(
+            paged(api.orgs.list_members, "python", per_page=100)
+        )
+    ]
+    print(f"Found {len(org_members)} org members")
+
     # Download usernames CSV
     print("Download CSV")
     r = requests.get(URL)
     reader = csv.reader(r.text.splitlines())
-    usernames = [row[1] for row in reader if row[1]]
-    print(f"Found {len(usernames)} usernames")
+    core_devs = [row[1] for row in reader if row[1]]
+    print(f"Found {len(core_devs)} core devs")
+
+    usernames = list(set(org_members) | set(core_devs))
+    print(f"Found {len(usernames)} total users")
 
     # Find issues for each user
     authors = {}
