@@ -133,11 +133,11 @@ def do_file_or_path(file_or_path: str, dry_run: bool = False) -> None:
     if os.path.isfile(file_or_path):
         do_file(file_or_path, dry_run)
     else:
-        for p in Path(file_or_path).rglob("*"):
+        for p in sorted(Path(file_or_path).rglob("*")):
             if p.suffix in (".py", ".rst", ".txt") and p.is_file():
                 logging.info(p)
                 do_file(str(p), dry_run)
-                print()
+                # print()
 
 
 def main() -> None:
