@@ -27,6 +27,21 @@ def removesuffix(self: str, suffix: str) -> str:
         return self[:]
 
 
+def clean_url(url: str) -> str:
+    # git@github.com:user/repo.git
+    # ->
+    # https://github.com/user/repo.git
+    if url.startswith("git@"):
+        url = "https://" + removeprefix(url, "git@").replace(":", "/")
+
+    # https://github.com/user/repo.git
+    # ->
+    # https://github.com:user/repo
+    url = removesuffix(url, ".git")
+
+    return url
+
+
 def main(args):
     # Find the user/repo of the Git origin
     git_repo = git.Repo(".")
@@ -38,16 +53,7 @@ def main(args):
             cprint("No upstream, opening origin", "yellow")
     print(url)
 
-    # git@github.com:user/repo.git
-    # ->
-    # https://github.com/user/repo.git
-    if url.startswith("git@"):
-        url = "https://" + removeprefix(url, "git@").replace(":", "/")
-
-    # https://github.com/user/repo.git
-    # ->
-    # https://github.com:user/repo
-    url = removesuffix(url, ".git")
+    url = clean_url(url)
 
     if args.tab:
         if "gitlab" in url:
