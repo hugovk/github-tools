@@ -1,4 +1,7 @@
 [tool.ruff]
+fix = true
+
+[tool.ruff.lint]
 select = [
   "C4", # flake8-comprehensions
   "E", # pycodestyle errors
@@ -20,5 +23,5 @@ extend-ignore = [
   "E241", # Multiple spaces after ','
 ]
 
-[tool.ruff.isort]
+[tool.ruff.lint.isort]
 required-imports = ["from __future__ import annotations"]

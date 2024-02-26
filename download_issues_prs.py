@@ -5,6 +5,7 @@ https://jsonlines.org
 Thanks to Ammar Askar
 https://discuss.python.org/t/decision-needed-should-we-close-stale-prs-and-how-many-lapsed-days-are-prs-considered-stale/4637/11?u=hugovk
 """
+
 from __future__ import annotations
 
 import argparse

@@ -2,6 +2,7 @@
 Find open CPython issues that have their linked PRs merged.
 They're candidates for closing.
 """
+
 from __future__ import annotations
 
 import argparse

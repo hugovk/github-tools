@@ -1,6 +1,7 @@
 """
 Find number of open CPython issues per core dev.
 """
+
 from __future__ import annotations
 
 import argparse
