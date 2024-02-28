@@ -55,9 +55,6 @@ def main() -> None:
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
     parser.add_argument(
-        "-x", "--dry-run", action="store_true", help="show but don't open issues"
-    )
-    parser.add_argument(
         "-m", "--markdown", action="store_true", help="Output in Markdown"
     )
     parser.add_argument("--links", action="store_true", help="Add links")
