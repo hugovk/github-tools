@@ -117,7 +117,8 @@ def main() -> None:
                         author,
                         f"[{x}](https://github.com/python/cpython/issues/{author})",
                         f"[{y}](https://github.com/python/cpython/pulls/{author})",
-                        x + y,
+                        f"[{x + y}](https://github.com/python/cpython/"
+                        f"issues?q=is%3Aopen+author%3A{author})",
                     )
                 case False, True:
                     row = (
