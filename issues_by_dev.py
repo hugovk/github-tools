@@ -14,8 +14,7 @@ from typing import Any, NamedTuple, TypeAlias
 import requests  # pip install requests
 from ghapi.all import GhApi, paged  # pip install ghapi
 from prettytable import MARKDOWN, PrettyTable  # pip install prettytable
-from rich import print  # pip install rich
-from rich.progress import track
+from rich.progress import track  # pip install rich
 
 Issue: TypeAlias = dict[str, Any]
 
