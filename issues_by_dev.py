@@ -18,6 +18,8 @@ from rich.progress import track  # pip install rich
 
 Issue: TypeAlias = dict[str, Any]
 
+# Token needs read:org "Read org and team membership, read org projects"
+# to read private organisation members. Otherwise only public are read.
 GITHUB_TOKEN = os.environ["GITHUB_TOOLS_TOKEN"]
 
 URL = "https://raw.githubusercontent.com/python/devguide/main/core-developers/developers.csv"
