@@ -20,8 +20,11 @@ def summarise(all_: list, disabled: list) -> tuple[int, int, str, int, str]:
 
     number_disabled = len(disabled)
     number_enabled = number - number_disabled
-    percent_enabled = f"{number_enabled / number:.0%}"
-    percent_disabled = f"{number_disabled / number:.0%}"
+    if number > 0:
+        percent_enabled = f"{number_enabled / number:.0%}"
+        percent_disabled = f"{number_disabled / number:.0%}"
+    else:
+        percent_enabled = percent_disabled = "n/a"
     cprint(
         f"2FA enabled:  {number_enabled} / {number} ({percent_enabled})",
         "green",
