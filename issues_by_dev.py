@@ -94,7 +94,7 @@ def main() -> None:
     table = PrettyTable()
     table.align = "r"
     table.align["Author"] = "l"
-    field_names = ["Author", "Issues", "PRs", "Total"]
+    field_names = ["", "Author", "Issues", "PRs", "Total"]
     if args.markdown:
         table.set_style(MARKDOWN)
     elif args.links:
@@ -106,7 +106,7 @@ def main() -> None:
     print()
     total_issues = total_prs = 0
     counter = Counter(totals)
-    for author, count in counter.most_common():
+    for i, (author, count) in enumerate(counter.most_common(), start=1):
         x = len(authors[author].issues)
         y = len(authors[author].prs)
         total_issues += x
@@ -115,6 +115,7 @@ def main() -> None:
             match (args.markdown, args.links):
                 case True, True:
                     row = (
+                        i,
                         author,
                         f"[{x}](https://github.com/python/cpython/issues/{author})",
                         f"[{y}](https://github.com/python/cpython/pulls/{author})",
@@ -123,6 +124,7 @@ def main() -> None:
                     )
                 case False, True:
                     row = (
+                        i,
                         author,
                         x,
                         y,
@@ -131,11 +133,17 @@ def main() -> None:
                         f"https://github.com/python/cpython/pulls/{author}",
                     )
                 case _:
-                    row = (author, x, y, x + y)
+                    row = (i, author, x, y, x + y)
 
             table.add_row(row)
 
-    total_row = ["Total", total_issues, total_prs, total_issues + total_prs]
+    total_row = [
+        "",
+        "Total",
+        f"{total_issues:,}",
+        f"{total_prs:,}",
+        f"{total_issues + total_prs:,}",
+    ]
     if args.links and not args.markdown:
         total_row.extend(["", ""])
 
