@@ -82,14 +82,7 @@ def check_issue(api: GhApi, issue: Issue) -> list[Issue]:
     return candidates
 
 
-def check_issues(
-    start: int = 1,
-    number: int = 100,
-    author: str | None = None,
-    sort_by: str = "newest",
-) -> list[Issue]:
-    api = GhApi(owner="python", repo="cpython", token=GITHUB_TOKEN)
-
+def sort_by_to_sort_and_direction(sort_by: str) -> tuple[str, str]:
     sort = "created"
     direction = "desc"
     match sort_by:
@@ -112,6 +105,18 @@ def check_issues(
             sort = "updated"
             direction = "asc"
 
+    return sort, direction
+
+
+def check_issues(
+    start: int = 1,
+    number: int = 100,
+    author: str | None = None,
+    sort_by: str = "newest",
+) -> list[Issue]:
+    api = GhApi(owner="python", repo="cpython", token=GITHUB_TOKEN)
+
+    sort, direction = sort_by_to_sort_and_direction(sort_by)
     candidates = []
     issue_count = 0
     for page in paged(
