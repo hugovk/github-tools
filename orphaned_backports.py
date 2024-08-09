@@ -135,7 +135,7 @@ def main() -> None:
     if candidates:
         cmd = "open "
         for pr in candidates:
-            print(pr["html_url"])
+            print(f'\\[#{pr["number"]}]({pr["html_url"]}) {pr["title"]}')
             cmd += f"{pr['html_url']} "
         print()
         print(cmd)
