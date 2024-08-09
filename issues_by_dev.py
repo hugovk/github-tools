@@ -74,7 +74,7 @@ def main() -> None:
 
     # Download usernames CSV
     print("Download CSV")
-    r = requests.get(URL)
+    r = requests.get(URL, timeout=10)
     reader = csv.reader(r.text.splitlines())
     core_devs = [row[1] for row in reader if row[1]]
     print(f"Found {len(core_devs)} core devs")
