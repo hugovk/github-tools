@@ -4,6 +4,14 @@ They may have been forgotten and are candidates
 for merging or closing.
 """
 
+# /// script
+# requires-python = ">=3.9"
+# dependencies = [
+#     "ghapi",
+#     "rich",
+# ]
+# ///
+
 from __future__ import annotations
 
 import argparse
