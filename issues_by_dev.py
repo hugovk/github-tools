@@ -2,6 +2,16 @@
 Find number of open CPython issues per core dev.
 """
 
+# /// script
+# requires-python = ">=3.9"
+# dependencies = [
+#   "ghapi",
+#   "prettytable>=3.12.0",
+#   "requests",
+#   "rich",
+# ]
+# ///
+
 from __future__ import annotations
 
 import argparse
@@ -13,7 +23,7 @@ from typing import Any, NamedTuple, TypeAlias
 
 import requests  # pip install requests
 from ghapi.all import GhApi, paged  # pip install ghapi
-from prettytable import MARKDOWN, PrettyTable  # pip install prettytable
+from prettytable import PrettyTable, TableStyle  # pip install "prettytable>=3.12.0"
 from rich.progress import track  # pip install rich
 
 Issue: TypeAlias = dict[str, Any]
@@ -96,7 +106,7 @@ def main() -> None:
     table.align["Author"] = "l"
     field_names = ["", "Author", "Issues", "PRs", "Total"]
     if args.markdown:
-        table.set_style(MARKDOWN)
+        table.set_style(TableStyle.MARKDOWN)
     elif args.links:
         table.align["Issues link"] = "l"
         table.align["PRs link"] = "l"
