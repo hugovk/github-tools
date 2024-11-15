@@ -1,6 +1,19 @@
 #!/usr/bin/env python3
 """
 Open the website for this repo (or upstream).
+
+Tip: add to your .zshrc or similar:
+alias repo=$HOME/github/github-tools/repo.py
+alias upstream="repo --upstream"
+
+Then you can do things like:
+repo pulls
+repo pulls/hugovk
+repo pulls/@me
+repo issues/hugovk
+repo actions
+repo branches
+upstream pulls
 """
 from __future__ import annotations
 
