@@ -1,8 +1,8 @@
 feedparser
 ghapi
 GitPython
+hishel
 httpx
-httpx_cache
 jsonlines
 prettytable
 PyGithub
