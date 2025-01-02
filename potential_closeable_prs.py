@@ -3,6 +3,14 @@ Find open CPython issues that have their linked PRs merged.
 They're candidates for closing.
 """
 
+# /// script
+# requires-python = ">=3.9"
+# dependencies = [
+#     "ghapi",
+#     "rich",
+# ]
+# ///
+
 from __future__ import annotations
 
 import argparse
@@ -119,14 +127,15 @@ def check_issues(
     sort, direction = sort_by_to_sort_and_direction(sort_by)
     candidates = []
     issue_count = 0
-    for page in paged(
-        api.issues.list_for_repo,
-        state="open",
-        creator=author,
-        sort=sort,
-        direction=direction,
-        per_page=100,
-    ):
+    params = {
+        "state": "open",
+        "sort": sort,
+        "direction": direction,
+        "per_page": 100,
+    }
+    if author is not None:
+        params["creator"] = author
+    for page in paged(api.issues.list_for_repo, **params):
         for issue in page:
             if issue.html_url.startswith("https://github.com/python/cpython/pull/"):
                 continue
