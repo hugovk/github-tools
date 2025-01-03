@@ -10,9 +10,9 @@ import logging
 import os
 import re
 import sys
+from collections.abc import Iterable
 from functools import cache
 from pathlib import Path
-from typing import Iterable
 
 import hishel  # pip install hishel
 import httpx  # pip install httpx
