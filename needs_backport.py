@@ -29,7 +29,7 @@ from typing import Any, TypeAlias
 from ghapi.all import GhApi, paged  # pip install ghapi
 from rich import print  # pip install rich
 
-from potential_closeable_prs import sort_by_to_sort_and_direction
+from potential_closeable_issues import sort_by_to_sort_and_direction
 
 PR: TypeAlias = dict[str, Any]
 
