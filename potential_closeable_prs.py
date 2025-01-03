@@ -4,7 +4,7 @@ They're candidates for closing.
 """
 
 # /// script
-# requires-python = ">=3.9"
+# requires-python = ">=3.11"
 # dependencies = [
 #     "ghapi",
 #     "rich",
@@ -14,6 +14,7 @@ They're candidates for closing.
 from __future__ import annotations
 
 import argparse
+import datetime as dt
 import json
 import os
 from typing import Any, TypeAlias
@@ -207,9 +208,15 @@ def main() -> None:
         if args.json:
             # Use same name as this .py but with .json
             filename = os.path.splitext(__file__)[0] + ".json"
+            now = dt.datetime.now(dt.UTC).isoformat()
             with open(filename, "w", encoding="utf-8") as f:
                 json.dump(
-                    {"candidates": [obj2dict(c) for c in candidates]}, f, indent=2
+                    {
+                        "last_update": now,
+                        "candidates": [obj2dict(c) for c in candidates],
+                    },
+                    f,
+                    indent=2,
                 )
                 print(f"Saved candidates to {filename}")
 
