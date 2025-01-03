@@ -19,6 +19,7 @@ import json
 import os
 from typing import Any, TypeAlias
 
+from fastcore.net import HTTP404NotFoundError
 from fastcore.xtras import obj2dict
 from ghapi.all import GhApi, paged  # pip install ghapi
 from rich import print  # pip install rich
@@ -63,7 +64,11 @@ def check_issue(api: GhApi, issue: Issue) -> list[Issue]:
 
     for pr_line in linked_prs:
         pr_number = int(pr_line.split("-")[1])
-        pr = api.pulls.get(pr_number)
+        try:
+            pr = api.pulls.get(pr_number)
+        except HTTP404NotFoundError as e:
+            print(f"[yellow]PR {pr_number} not found: {e}[/yellow]")
+            continue
 
         if pr.merged:
             states.append("merged")
