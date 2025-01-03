@@ -14,9 +14,11 @@ They're candidates for closing.
 from __future__ import annotations
 
 import argparse
+import json
 import os
 from typing import Any, TypeAlias
 
+from fastcore.xtras import obj2dict
 from ghapi.all import GhApi, paged  # pip install ghapi
 from rich import print  # pip install rich
 
@@ -179,6 +181,7 @@ def main() -> None:
         ),
         help="Sort by",
     )
+    parser.add_argument("-j", "--json", action="store_true", help="output to JSON file")
     parser.add_argument(
         "-x", "--dry-run", action="store_true", help="show but don't open issues"
     )
@@ -200,6 +203,15 @@ def main() -> None:
         print(cmd)
         if not args.dry_run:
             os.system(cmd)
+
+        if args.json:
+            # Use same name as this .py but with .json
+            filename = os.path.splitext(__file__)[0] + ".json"
+            with open(filename, "w", encoding="utf-8") as f:
+                json.dump(
+                    {"candidates": [obj2dict(c) for c in candidates]}, f, indent=2
+                )
+                print(f"Saved candidates to {filename}")
 
 
 if __name__ == "__main__":
