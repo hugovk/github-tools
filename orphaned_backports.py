@@ -137,7 +137,7 @@ def main() -> None:
     candidates = check_prs(args.start, args.number, args.author, args.sort)
 
     # Report
-    print()
+    print("\n[bold]Summary")
     print(f"Found {len(candidates)} orphaned backports (parent issue closed)")
 
     if candidates:
