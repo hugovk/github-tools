@@ -85,6 +85,9 @@ def check_issue(api: GhApi, issue: Issue) -> list[Issue]:
             colour_state = pr.state
         print(pr_line, colour_state, pr.html_url)
 
+        # Merge in the linked PR data to the issue
+        issue.setdefault("linked_prs", []).append(pr)
+
     if all(state == "closed" for state in states):
         print("[red]*** ALL PRS CLOSED ***[/red]")
         candidates.append(issue)
