@@ -210,20 +210,20 @@ def main() -> None:
         if not args.dry_run:
             os.system(cmd)
 
-        if args.json:
-            # Use same name as this .py but with .json
-            filename = os.path.splitext(__file__)[0] + ".json"
-            now = dt.datetime.now(dt.UTC).isoformat()
-            with open(filename, "w", encoding="utf-8") as f:
-                json.dump(
-                    {
-                        "last_update": now,
-                        "candidates": [obj2dict(c) for c in candidates],
-                    },
-                    f,
-                    indent=2,
-                )
-                print(f"Saved candidates to {filename}")
+    if args.json:
+        # Use same name as this .py but with .json
+        filename = os.path.splitext(__file__)[0] + ".json"
+        now = dt.datetime.now(dt.UTC).isoformat()
+        with open(filename, "w", encoding="utf-8") as f:
+            json.dump(
+                {
+                    "last_update": now,
+                    "candidates": [obj2dict(c) for c in candidates],
+                },
+                f,
+                indent=2,
+            )
+            print(f"Saved candidates to {filename}")
 
 
 if __name__ == "__main__":
