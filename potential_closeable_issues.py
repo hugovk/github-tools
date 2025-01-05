@@ -88,7 +88,9 @@ def check_issue(api: GhApi, issue: Issue) -> list[Issue]:
         # Merge in the linked PR data to the issue
         issue.setdefault("linked_prs", []).append(pr)
 
-    if all(state == "closed" for state in states):
+    if not states:
+        print("[yellow]*** NO PRS FOUND ***[/yellow]")
+    elif all(state == "closed" for state in states):
         print("[red]*** ALL PRS CLOSED ***[/red]")
         candidates.append(issue)
     elif all(state == "merged" for state in states):
