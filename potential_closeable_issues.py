@@ -63,7 +63,10 @@ def check_issue(api: GhApi, issue: Issue) -> list[Issue]:
             linked_prs.append(line.strip())
 
     for pr_line in linked_prs:
-        pr_number = int(pr_line.split("-")[1])
+        # pr_line is usually like "* gh-12345" but sometimes extra text is added
+        # like "* gh-12345 (abandoned proposal)", so extract the gh-12345 part
+        word = next(word for word in pr_line.split() if word.startswith("gh-"))
+        pr_number = int(word.split("-")[1])
         try:
             pr = api.pulls.get(pr_number)
         except HTTP404NotFoundError as e:
