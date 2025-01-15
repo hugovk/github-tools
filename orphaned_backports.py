@@ -9,6 +9,7 @@ for merging or closing.
 # dependencies = [
 #     "ghapi",
 #     "rich",
+#     "stamina",
 # ]
 # ///
 
@@ -18,8 +19,10 @@ import argparse
 import datetime as dt
 import json
 import os
+import urllib
 from typing import Any, TypeAlias
 
+import stamina
 from fastcore.xtras import obj2dict
 from ghapi.all import GhApi, paged  # pip install ghapi
 from rich import print  # pip install rich
@@ -70,6 +73,11 @@ def is_linked_issue_closed(api: GhApi, pr: PR) -> bool:
     return issue["state"] == "closed"
 
 
+@stamina.retry(on=urllib.error.HTTPError)
+def stamina_paged(*args, **kwargs):
+    return paged(*args, **kwargs)
+
+
 def check_prs(
     start: int = 1,
     number: int = 100,
@@ -82,7 +90,8 @@ def check_prs(
 
     candidates = []
     pr_count = 0
-    for page in paged(
+
+    for page in stamina_paged(
         api.pulls.list,
         state="open",
         creator=author,
