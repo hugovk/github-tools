@@ -162,7 +162,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "-b",
         "--branches",
-        default="3.13,3.12,3.11,3.10,3.9,3.8",
+        default="3.13,3.12,3.11,3.10,3.9",
         help="branches to check",
     )
     parser.add_argument(
