@@ -38,7 +38,7 @@ GITHUB_TOKEN = os.environ["GITHUB_TOOLS_TOKEN"]
 
 
 @cache
-def get_pr_commit(pull_number: int) -> str:
+def get_pr_commit(api: GhApi, pull_number: int) -> str:
     return api.pulls.get(pull_number=pull_number).merge_commit_sha
 
 
@@ -63,6 +63,7 @@ def is_commit_title_in_branch(repo_path: str, title: str, branch: str) -> bool:
 
 
 def check_prs(
+    api: GhApi,
     repo_path: str,
     branch_to_check: str,
     start: int = 1,
@@ -100,7 +101,7 @@ def check_prs(
             if not pr.pull_request.merged_at:
                 # PR was closed without being merged, skip it
                 continue
-            commit = get_pr_commit(pr.number)
+            commit = get_pr_commit(api, pr.number)
             title = get_title_of_commit(repo_path, commit)
             print(f"  {title}")
 
@@ -114,46 +115,7 @@ def check_prs(
     return candidates
 
 
-def main(args) -> None:
-    # Find
-    total_candidates = defaultdict(list)
-    for branch in args.branches.split(","):
-        print(f"\nChecking branch {branch}")
-        candidates = check_prs(
-            args.repo_path, branch, args.start, args.number, args.sort
-        )
-        for reason, prs in candidates.items():
-            total_candidates[reason].extend(prs)
-
-    # Report
-    def report(prs: list[PR]):
-        if prs:
-            seen = set()
-            cmd = "open "
-            for pr in prs:
-                if pr["number"] in seen:
-                    continue
-                print(f'\\[#{pr["number"]}]({pr["html_url"]}) {pr["title"]}')
-                cmd += f"{pr['html_url']} "
-                seen.add(pr["number"])
-            print()
-            print(cmd)
-            if args.open_prs:
-                os.system(cmd)
-
-    print("\n[bold]Results[/bold]")
-    for reason, prs in total_candidates.items():
-        total = len({pr["number"] for pr in prs})
-        print(f"\nFound {total} {reason}")
-        report(prs)
-
-    print("\n[bold]Summary[/bold]\n")
-    for reason, prs in total_candidates.items():
-        total = len({pr["number"] for pr in prs})
-        print(f"* Found {total} {reason}")
-
-
-if __name__ == "__main__":
+def main() -> None:
     parser = argparse.ArgumentParser(
         description=__doc__,
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
@@ -190,4 +152,44 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     api = GhApi(owner="python", repo="cpython", token=GITHUB_TOKEN)
-    main(args)
+
+    # Find
+    total_candidates = defaultdict(list)
+    for branch in args.branches.split(","):
+        print(f"\nChecking branch {branch}")
+        candidates = check_prs(
+            api, args.repo_path, branch, args.start, args.number, args.sort
+        )
+        for reason, prs in candidates.items():
+            total_candidates[reason].extend(prs)
+
+    # Report
+    def report(prs: list[PR]):
+        if prs:
+            seen = set()
+            cmd = "open "
+            for pr in prs:
+                if pr["number"] in seen:
+                    continue
+                print(f'\\[#{pr["number"]}]({pr["html_url"]}) {pr["title"]}')
+                cmd += f"{pr['html_url']} "
+                seen.add(pr["number"])
+            print()
+            print(cmd)
+            if args.open_prs:
+                os.system(cmd)
+
+    print("\n[bold]Results[/bold]")
+    for reason, prs in total_candidates.items():
+        total = len({pr["number"] for pr in prs})
+        print(f"\nFound {total} {reason}")
+        report(prs)
+
+    print("\n[bold]Summary[/bold]\n")
+    for reason, prs in total_candidates.items():
+        total = len({pr["number"] for pr in prs})
+        print(f"* Found {total} {reason}")
+
+
+if __name__ == "__main__":
+    main()
