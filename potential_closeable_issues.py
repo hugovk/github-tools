@@ -170,6 +170,14 @@ def check_issues(
     return candidates
 
 
+def save_json(data: Any, filename: str) -> None:
+    # Put last_update at the start
+    data = {"last_update": dt.datetime.now(dt.UTC).isoformat(), **data}
+    with open(filename, "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=2)
+        print(f"Saved candidates to {filename}")
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(
         description=__doc__,
@@ -219,19 +227,10 @@ def main() -> None:
             os.system(cmd)
 
     if args.json:
+        data = {"candidates": [obj2dict(c) for c in candidates]}
         # Use same name as this .py but with .json
         filename = os.path.splitext(__file__)[0] + ".json"
-        now = dt.datetime.now(dt.UTC).isoformat()
-        with open(filename, "w", encoding="utf-8") as f:
-            json.dump(
-                {
-                    "last_update": now,
-                    "candidates": [obj2dict(c) for c in candidates],
-                },
-                f,
-                indent=2,
-            )
-            print(f"Saved candidates to {filename}")
+        save_json(data, filename)
 
 
 if __name__ == "__main__":

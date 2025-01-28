@@ -16,8 +16,6 @@ for merging or closing.
 from __future__ import annotations
 
 import argparse
-import datetime as dt
-import json
 import os
 import urllib
 from typing import Any, TypeAlias
@@ -27,7 +25,7 @@ from fastcore.xtras import obj2dict
 from ghapi.all import GhApi, paged  # pip install ghapi
 from rich import print  # pip install rich
 
-from potential_closeable_issues import sort_by_to_sort_and_direction
+from potential_closeable_issues import save_json, sort_by_to_sort_and_direction
 
 PR: TypeAlias = dict[str, Any]
 
@@ -164,19 +162,10 @@ def main() -> None:
             os.system(cmd)
 
     if args.json:
+        data = {"candidates": [obj2dict(c) for c in candidates]}
         # Use same name as this .py but with .json
         filename = os.path.splitext(__file__)[0] + ".json"
-        now = dt.datetime.now(dt.UTC).isoformat()
-        with open(filename, "w", encoding="utf-8") as f:
-            json.dump(
-                {
-                    "last_update": now,
-                    "candidates": [obj2dict(c) for c in candidates],
-                },
-                f,
-                indent=2,
-            )
-            print(f"Saved candidates to {filename}")
+        save_json(data, filename)
 
 
 if __name__ == "__main__":

@@ -10,7 +10,7 @@ Some PRs have those labels but:
 """
 
 # /// script
-# requires-python = ">=3.9"
+# requires-python = ">=3.10"
 # dependencies = [
 #     "ghapi",
 #     "rich",
@@ -26,10 +26,11 @@ from collections import defaultdict
 from functools import cache
 from typing import Any, TypeAlias
 
+from fastcore.xtras import obj2dict
 from ghapi.all import GhApi, paged  # pip install ghapi
 from rich import print  # pip install rich
 
-from potential_closeable_issues import sort_by_to_sort_and_direction
+from potential_closeable_issues import save_json, sort_by_to_sort_and_direction
 
 PR: TypeAlias = dict[str, Any]
 
@@ -131,7 +132,11 @@ def main() -> None:
         "-s", "--start", default=1, type=int, help="start at this PR number"
     )
     parser.add_argument(
-        "-n", "--number", default=100, type=int, help="number of PRs to check"
+        "-n",
+        "--number",
+        default=100,
+        type=int,
+        help="number of PRs to check per branch",
     )
     parser.add_argument(
         "--sort",
@@ -146,6 +151,7 @@ def main() -> None:
         ),
         help="Sort by",
     )
+    parser.add_argument("-j", "--json", action="store_true", help="output to JSON file")
     parser.add_argument(
         "-o", "--open-prs", action="store_true", help="open PRs in browser"
     )
@@ -189,6 +195,17 @@ def main() -> None:
     for reason, prs in total_candidates.items():
         total = len({pr["number"] for pr in prs})
         print(f"* Found {total} {reason}")
+
+    if args.json:
+        data = {
+            "reasons": [
+                {reason: [obj2dict(pr) for pr in prs]}
+                for reason, prs in total_candidates.items()
+            ],
+        }
+        # Use same name as this .py but with .json
+        filename = os.path.splitext(__file__)[0] + ".json"
+        save_json(data, filename)
 
 
 if __name__ == "__main__":
