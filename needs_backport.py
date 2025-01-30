@@ -167,19 +167,17 @@ def main() -> None:
             api, args.repo_path, branch, args.start, args.number, args.sort
         )
         for reason, prs in candidates.items():
+            # Remove duplicates
+            prs = [pr for pr in prs if pr not in total_candidates[reason]]
             total_candidates[reason].extend(prs)
 
     # Report
     def report(prs: list[PR]):
         if prs:
-            seen = set()
             cmd = "open "
             for pr in prs:
-                if pr["number"] in seen:
-                    continue
                 print(f'\\[#{pr["number"]}]({pr["html_url"]}) {pr["title"]}')
                 cmd += f"{pr['html_url']} "
-                seen.add(pr["number"])
             print()
             print(cmd)
             if args.open_prs:
