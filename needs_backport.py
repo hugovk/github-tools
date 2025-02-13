@@ -108,10 +108,10 @@ def check_prs(
 
             if is_commit_title_in_branch(repo_path, title, branch_to_check):
                 print("    [red]Backport found, remove label?[/red]")
-                candidates["with backports, remove label?"].append(pr)
+                candidates["PRs with backports"].append(pr)
             else:
                 print(f"    [yellow]Backport to {branch_to_check} missing[/yellow]")
-                candidates["missing backports"].append(pr)
+                candidates["PRs missing backports"].append(pr)
 
     return candidates
 
