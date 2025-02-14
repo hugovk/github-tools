@@ -163,6 +163,10 @@ def main() -> None:
     total_candidates = defaultdict(list)
     for branch in args.branches.split(","):
         print(f"\nChecking branch {branch}")
+        output = subprocess.check_output(
+            ["git", "fetch", "origin", f"{branch}:{branch}"], cwd=args.repo_path
+        ).decode("utf-8")
+        print(output)
         candidates = check_prs(
             api, args.repo_path, branch, args.start, args.number, args.sort
         )
