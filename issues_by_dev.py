@@ -1,5 +1,5 @@
 """
-Find number of open CPython issues per core dev.
+Find number of open issues/PRs in the Python org team.
 """
 
 # /// script
@@ -60,6 +60,18 @@ def check_issues(author: str | None = None) -> Author:
     return Author(issues, prs)
 
 
+def markdown_link(url: str, text: str | int) -> str:
+    return f"[{text}]({url})"
+
+
+def terminal_link(url: str, text: str | int) -> str:
+    return f"\033]8;;{url}\033\\{text}\033]8;;\033\\"
+
+
+def no_link(url: str, text: str | int) -> str:
+    return str(text)
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(
         description=__doc__,
@@ -107,10 +119,9 @@ def main() -> None:
     field_names = ["", "Author", "Issues", "PRs", "Total"]
     if args.markdown:
         table.set_style(TableStyle.MARKDOWN)
-    elif args.links:
-        table.align["Issues link"] = "l"
-        table.align["PRs link"] = "l"
-        field_names.extend(["Issues link", "PRs link"])
+    else:
+        table.set_style(TableStyle.SINGLE_BORDER)
+
     table.field_names = field_names
 
     print()
@@ -124,26 +135,22 @@ def main() -> None:
         if x or y:
             match (args.markdown, args.links):
                 case True, True:
-                    row = (
-                        i,
-                        author,
-                        f"[{x}](https://github.com/python/cpython/issues/{author})",
-                        f"[{y}](https://github.com/python/cpython/pulls/{author})",
-                        f"[{x + y}](https://github.com/python/cpython/"
-                        f"issues?q=is%3Aopen+author%3A{author})",
-                    )
+                    link_function = markdown_link
                 case False, True:
-                    row = (
-                        i,
-                        author,
-                        x,
-                        y,
-                        x + y,
-                        f"https://github.com/python/cpython/issues/{author}",
-                        f"https://github.com/python/cpython/pulls/{author}",
-                    )
+                    link_function = terminal_link
                 case _:
-                    row = (i, author, x, y, x + y)
+                    link_function = no_link
+
+            row = (
+                i,
+                author,
+                link_function(f"https://github.com/python/cpython/issues/{author}", x),
+                link_function(f"https://github.com/python/cpython/pulls/{author}", y),
+                link_function(
+                    f"https://github.com/python/cpython/issues?q=is%3Aopen+author%3A{author}",
+                    x + y,
+                ),
+            )
 
             table.add_row(row)
 
@@ -154,8 +161,6 @@ def main() -> None:
         f"{total_prs:,}",
         f"{total_issues + total_prs:,}",
     ]
-    if args.links and not args.markdown:
-        total_row.extend(["", ""])
 
     table.add_row(total_row)
     print(table)
