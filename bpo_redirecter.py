@@ -33,13 +33,15 @@ BPO_URL_REGEX = re.compile(r"https?://bugs\.python\.org/issue(\d+)")
 # :issue:`45440`
 BPO_ROLE_REGEX = re.compile(r":issue:`(\d+)`")
 
+logger = logging.getLogger(__name__)
+
 
 @cache
 def redirect(client: httpx.Client, bpo_number: int) -> str:
     redirect_link = f"https://bugs.python.org/issue?@action=redirect&bpo={bpo_number}"
-    logging.info("Redirect link:\t%s", redirect_link)
+    logger.info("Redirect link:\t%s", redirect_link)
     r = client.get(redirect_link, follow_redirects=True)
-    logging.info("GitHub link:\t%s", r.url)
+    logger.info("GitHub link:\t%s", r.url)
     return str(r.url)
 
 
@@ -74,15 +76,15 @@ def do_lines(old_lines: list[str], filename: str) -> list[str]:
             ms = BPO_URL_REGEX.findall(line.strip())
             new_line = line
             for m in ms:
-                logging.info("Old line:\t%s", line.rstrip())
+                logger.info("Old line:\t%s", line.rstrip())
                 # bpo_link = f"https://bugs.python.org/issue{m}"
-                # logging.info("BPO link:\t%s", bpo_link)
+                # logger.info("BPO link:\t%s", bpo_link)
                 bpo_number = int(m)
-                logging.info("BPO number:\t%d", bpo_number)
+                logger.info("BPO number:\t%d", bpo_number)
 
                 gh_link = redirect(client, bpo_number)
                 new_line = BPO_URL_REGEX.sub(gh_link, new_line, count=1)
-                logging.info("New line:\t%s", new_line.rstrip())
+                logger.info("New line:\t%s", new_line.rstrip())
 
             if line != new_line:
                 changes += 1
@@ -92,18 +94,18 @@ def do_lines(old_lines: list[str], filename: str) -> list[str]:
             ms = BPO_ROLE_REGEX.findall(line.strip())
             new_line = line
             for m in ms:
-                logging.info("Old line:\t%s", line.rstrip())
+                logger.info("Old line:\t%s", line.rstrip())
                 # bpo_role = f":issue:`{m}`"
-                # logging.info("BPO link:\t%s", bpo_role)
+                # logger.info("BPO link:\t%s", bpo_role)
                 bpo_number = int(m)
-                logging.info("BPO number:\t%d", bpo_number)
+                logger.info("BPO number:\t%d", bpo_number)
 
                 gh_link = redirect(client, bpo_number)
                 gh_number = gh_link.split("/")[-1]
                 new_role = f":gh:`{gh_number}`"
-                logging.info("New role:\t%s", new_role)
+                logger.info("New role:\t%s", new_role)
                 new_line = BPO_ROLE_REGEX.sub(new_role, new_line, count=1)
-                logging.info("New line:\t%s", new_line.rstrip())
+                logger.info("New line:\t%s", new_line.rstrip())
 
             if line != new_line:
                 changes += 1
@@ -135,7 +137,7 @@ def do_file_or_path(file_or_path: str, dry_run: bool = False) -> None:
     else:
         for p in sorted(Path(file_or_path).rglob("*")):
             if p.suffix in (".py", ".rst", ".txt") and p.is_file():
-                logging.info(p)
+                logger.info(p)
                 do_file(str(p), dry_run)
                 # print()
 
@@ -168,7 +170,7 @@ def main() -> None:
 
     do_file_or_path(args.input, args.dry_run)
 
-    logging.info(redirect.cache_info())
+    logger.info(redirect.cache_info())
 
 
 if __name__ == "__main__":

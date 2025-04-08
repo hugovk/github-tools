@@ -25,11 +25,13 @@ except ImportError:
 
 USES_REGEX = re.compile(r"(- )?uses: \"?([a-z-]+/[a-z-]+)@([a-z0-9.]+)\"?")
 
+logger = logging.getLogger(__name__)
+
 
 @cache
 def get_repo_tags(repo: str) -> Iterable[str]:
     url = f"https://github.com/{repo}/tags.atom"
-    logging.info(url)
+    logger.info(url)
     feed = feedparser.parse(url)
     return [entry.link.split("/")[-1] for entry in feed.entries]
 
@@ -39,11 +41,11 @@ def update_tag(repo: str, old_version: str) -> str:
     if old_version in ("main", "master"):
         return old_version
     tags = get_repo_tags(repo)
-    logging.info(tags)
+    logger.info(tags)
     same_length_tags = [tag for tag in tags if len(tag) == len(old_version)]
-    logging.info(same_length_tags)
+    logger.info(same_length_tags)
     same_length_tags.sort(reverse=True)
-    logging.info(same_length_tags)
+    logger.info(same_length_tags)
     try:
         tag = same_length_tags[0]
     except IndexError:
@@ -80,7 +82,7 @@ def do_file(filename: str, dry_run: bool) -> None:
             version = m[3]
             if repo == "pypa/gh-action-pypi-publish" and version == "release":
                 new_lines.append(line)
-                logging.info("%s's '%s' is a branch not tag, skipping", repo, version)
+                logger.info("%s's '%s' is a branch not tag, skipping", repo, version)
                 continue
             new_version = update_tag(repo, version)
             if new_version and version != new_version:
@@ -136,18 +138,18 @@ def main() -> None:
             level=args.loglevel, format="%(message)s", handlers=[RichHandler()]
         )
     else:
-        logging.basicConfig(level=args.loglevel, format="%(message)s")
+        logger.basicConfig(level=args.loglevel, format="%(message)s")
 
     if os.path.isfile(args.input):
         do_file(args.input, args.dry_run)
     else:
         for path in Path(args.input).rglob("*.y*ml"):
-            logging.info(path)
+            logger.info(path)
             do_file(str(path), args.dry_run)
             print()
 
-    logging.info("update_tag:\t%s", update_tag.cache_info())
-    logging.info("get_repo_tags:\t%s", get_repo_tags.cache_info())
+    logger.info("update_tag:\t%s", update_tag.cache_info())
+    logger.info("get_repo_tags:\t%s", get_repo_tags.cache_info())
 
 
 if __name__ == "__main__":
