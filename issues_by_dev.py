@@ -32,7 +32,7 @@ Issue: TypeAlias = dict[str, Any]
 # to read private organisation members. Otherwise only public are read.
 GITHUB_TOKEN = os.environ["GITHUB_TOOLS_TOKEN"]
 
-URL = "https://raw.githubusercontent.com/python/devguide/main/core-developers/developers.csv"
+URL = "https://raw.githubusercontent.com/python/devguide/main/core-team/core-team.csv"
 
 
 class Author(NamedTuple):
