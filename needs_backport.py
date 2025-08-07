@@ -56,9 +56,8 @@ def get_title_of_commit(repo_path: str, commit_sha: str) -> str:
 
 @cache
 def is_commit_title_in_branch(repo_path: str, title: str, branch: str) -> bool:
-    # TODO make sure title is escaped for grep
     output = subprocess.check_output(
-        ["git", "log", "--grep", title, branch], cwd=repo_path
+        ["git", "log", "--grep", title, "--fixed-strings", branch], cwd=repo_path
     ).decode("utf-8")
     return output != ""
 
