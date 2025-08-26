@@ -24,7 +24,10 @@ from typing import Any, NamedTuple, TypeAlias
 import requests  # pip install requests
 from ghapi.all import GhApi, paged  # pip install ghapi
 from prettytable import PrettyTable, TableStyle  # pip install "prettytable>=3.12.0"
-from rich.progress import track  # pip install rich
+from rich import print  # pip install rich
+from rich.progress import track
+
+from potential_closeable_issues import save_json
 
 Issue: TypeAlias = dict[str, Any]
 
@@ -33,6 +36,7 @@ Issue: TypeAlias = dict[str, Any]
 GITHUB_TOKEN = os.environ["GITHUB_TOOLS_TOKEN"]
 
 URL = "https://raw.githubusercontent.com/python/devguide/main/core-team/core-team.csv"
+REPO = "https://github.com/python/cpython"
 
 
 class Author(NamedTuple):
@@ -52,7 +56,7 @@ def check_issues(author: str | None = None) -> Author:
         per_page=100,
     ):
         for issue in page:
-            if issue.html_url.startswith("https://github.com/python/cpython/pull/"):
+            if issue.html_url.startswith(f"{REPO}/pull/"):
                 prs.append(issue)
             else:
                 issues.append(issue)
@@ -82,6 +86,7 @@ def main() -> None:
     )
     parser.add_argument("--links", action="store_true", help="Add links")
     parser.add_argument("--limit", type=int, help="Limit to this number of usernames")
+    parser.add_argument("-j", "--json", action="store_true", help="output to JSON file")
     args = parser.parse_args()
 
     # https://docs.github.com/en/rest/orgs/members?apiVersion=2022-11-28#list-organization-members
@@ -127,12 +132,13 @@ def main() -> None:
     print()
     total_issues = total_prs = 0
     counter = Counter(totals)
+    data = {}
     for i, (author, count) in enumerate(counter.most_common(), start=1):
-        x = len(authors[author].issues)
-        y = len(authors[author].prs)
-        total_issues += x
-        total_prs += y
-        if x or y:
+        issues = len(authors[author].issues)
+        prs = len(authors[author].prs)
+        total_issues += issues
+        total_prs += prs
+        if issues or prs:
             match (args.markdown, args.links):
                 case True, True:
                     link_function = markdown_link
@@ -144,15 +150,15 @@ def main() -> None:
             row = (
                 i,
                 author,
-                link_function(f"https://github.com/python/cpython/issues/{author}", x),
-                link_function(f"https://github.com/python/cpython/pulls/{author}", y),
+                link_function(f"{REPO}/issues/{author}", issues),
+                link_function(f"{REPO}/pulls/{author}", prs),
                 link_function(
-                    f"https://github.com/python/cpython/issues?q=is%3Aopen+author%3A{author}",
-                    x + y,
+                    f"{REPO}/issues?q=is%3Aopen+author%3A{author}", issues + prs
                 ),
             )
 
             table.add_row(row)
+            data[author] = {"issues": issues, "prs": prs}
 
     total_row = [
         "",
@@ -164,6 +170,12 @@ def main() -> None:
 
     table.add_row(total_row)
     print(table)
+
+    if args.json:
+        print(data)
+        # # Use same name as this .py but with .json
+        filename = os.path.splitext(__file__)[0] + ".json"
+        save_json(data, filename)
 
 
 if __name__ == "__main__":

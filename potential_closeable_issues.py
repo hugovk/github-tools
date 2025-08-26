@@ -175,7 +175,7 @@ def save_json(data: Any, filename: str) -> None:
     data = {"last_update": dt.datetime.now(dt.UTC).isoformat(), **data}
     with open(filename, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=2)
-        print(f"Saved candidates to {filename}")
+        print(f"Saved to {filename}")
 
 
 def main() -> None:
