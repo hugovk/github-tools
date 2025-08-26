@@ -15,7 +15,7 @@ jobs:
         os: [ubuntu-latest]
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v5
@@ -34,7 +34,7 @@ jobs:
           tox -e py
 
       - name: Upload coverage
-        uses: codecov/codecov-action@v5.1.2
+        uses: codecov/codecov-action@v5.5.0
         with:
           flags: ${{ matrix.os }}
           name: ${{ matrix.os }} Python ${{ matrix.python-version }}
