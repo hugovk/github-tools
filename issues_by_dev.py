@@ -85,7 +85,9 @@ def main() -> None:
         "-m", "--markdown", action="store_true", help="Output in Markdown"
     )
     parser.add_argument("--links", action="store_true", help="Add links")
-    parser.add_argument("--limit", type=int, help="Limit to this number of usernames")
+    parser.add_argument(
+        "-n", "--number", type=int, help="Limit to this number of usernames"
+    )
     parser.add_argument("-j", "--json", action="store_true", help="output to JSON file")
     args = parser.parse_args()
 
@@ -113,7 +115,7 @@ def main() -> None:
     authors = {}
     totals = {}
     print("Fetch issues")
-    for author in track(usernames[: args.limit], description="Fetching issues..."):
+    for author in track(usernames[: args.number], description="Fetching issues..."):
         authors[author] = check_issues(author)
         totals[author] = len(authors[author].issues) + len(authors[author].prs)
 
