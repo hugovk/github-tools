@@ -35,10 +35,10 @@ def check_pr(api: GhApi, pr: Issue) -> list[Issue]:
     """
     Extract linked issue from title ("gh-XXXXXX") and check if it is closed.
     """
-    gh_match = re.search(r"(gh|GH)-(\d+)", pr.title, re.IGNORECASE)
+    gh_match = re.search(r"gh-(\d+)", pr.title, re.IGNORECASE)
     if not gh_match:
         return []
-    issue_number = int(gh_match.group(2))
+    issue_number = int(gh_match.group(1))
 
     try:
         issue = api.issues.get(issue_number)
