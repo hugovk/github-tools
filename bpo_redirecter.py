@@ -14,8 +14,8 @@ from collections.abc import Iterable
 from functools import cache
 from pathlib import Path
 
-import hishel  # pip install hishel
 import httpx  # pip install httpx
+from hishel.httpx import SyncCacheClient  # pip install hishel
 from termcolor import colored, cprint  # pip install termcolor
 
 try:
@@ -67,7 +67,7 @@ def do_file(filename: str, dry_run: bool = False) -> None:
 
 
 def do_lines(old_lines: list[str], filename: str) -> list[str]:
-    with hishel.CacheClient() as client:
+    with SyncCacheClient() as client:
         changes = 0
         new_lines = []
         for line in old_lines:
