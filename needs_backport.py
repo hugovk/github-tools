@@ -20,8 +20,10 @@ Some PRs have those labels but:
 from __future__ import annotations
 
 import argparse
+import json
 import os
 import subprocess
+import urllib.request
 from collections import defaultdict
 from functools import cache
 from typing import Any, TypeAlias
@@ -36,6 +38,21 @@ PR: TypeAlias = dict[str, Any]
 
 
 GITHUB_TOKEN = os.environ["GITHUB_TOOLS_TOKEN"]
+
+
+@cache
+def fetch_active_branches() -> str:
+    url = "https://raw.githubusercontent.com/python/devguide/main/include/release-cycle.json"
+    with urllib.request.urlopen(url) as response:
+        data = json.loads(response.read().decode("utf-8"))
+
+    active_versions = []
+    for version, info in data.items():
+        status = info.get("status", "")
+        if status in ("bugfix", "security"):
+            active_versions.append(version)
+
+    return ",".join(active_versions)
 
 
 @cache
@@ -124,7 +141,7 @@ def main() -> None:
     parser.add_argument(
         "-b",
         "--branches",
-        default="3.13,3.12,3.11,3.10,3.9",
+        default=fetch_active_branches(),
         help="branches to check",
     )
     parser.add_argument(
