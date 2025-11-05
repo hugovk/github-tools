@@ -1,6 +1,15 @@
-#!/usr/bin/env python3
+# /// script
+# requires-python = ">=3.14"
+# dependencies = [
+#     "feedparser",
+#     "rich",
+#     "termcolor",
+# ]
+# ///
 """
 Upgrade GitHub Actions versions in workflow file or directory
+
+uv run ~/github/github-tools/upgrade_actions.py
 """
 from __future__ import annotations
 
