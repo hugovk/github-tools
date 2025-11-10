@@ -42,7 +42,7 @@ GITHUB_TOKEN = os.environ["GITHUB_TOOLS_TOKEN"]
 
 @cache
 def fetch_active_branches() -> str:
-    url = "https://raw.githubusercontent.com/python/devguide/main/include/release-cycle.json"
+    url = "https://peps.python.org/api/release-cycle.json"
     with urllib.request.urlopen(url) as response:
         data = json.loads(response.read().decode("utf-8"))
 
