@@ -10,4 +10,5 @@ pytest
 pytest-cov
 requests
 rich
+stamina
 termcolor
