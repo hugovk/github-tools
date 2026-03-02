@@ -33,6 +33,10 @@ Issue: TypeAlias = dict[str, Any]
 GITHUB_TOKEN = os.environ["GITHUB_TOOLS_TOKEN"]
 
 
+def _is_server_error(exc: Exception) -> bool:
+    return isinstance(exc, HTTPError) and exc.code >= 500
+
+
 def check_issue(api: GhApi, issue: Issue) -> list[Issue]:
     """
     Look for a chunk like this, collect the PRs:
@@ -71,7 +75,7 @@ def check_issue(api: GhApi, issue: Issue) -> list[Issue]:
         word = next(word for word in pr_line.split() if word.startswith("gh-"))
         pr_number = int(word.split("-")[1])
         try:
-            for attempt in stamina.retry_context(on=HTTPError):
+            for attempt in stamina.retry_context(on=_is_server_error):
                 with attempt:
                     pr = api.pulls.get(pr_number)
         except HTTP404NotFoundError as e:
