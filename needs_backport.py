@@ -14,6 +14,7 @@ Some PRs have those labels but:
 # dependencies = [
 #     "ghapi",
 #     "rich",
+#     "stamina",
 # ]
 # ///
 
