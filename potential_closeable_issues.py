@@ -8,6 +8,7 @@ They're candidates for closing.
 # dependencies = [
 #     "ghapi",
 #     "rich",
+#     "stamina",
 # ]
 # ///
 
@@ -18,7 +19,9 @@ import datetime as dt
 import json
 import os
 from typing import Any, TypeAlias
+from urllib.error import HTTPError
 
+import stamina
 from fastcore.net import HTTP404NotFoundError
 from fastcore.xtras import obj2dict
 from ghapi.all import GhApi, paged  # pip install ghapi
@@ -68,7 +71,9 @@ def check_issue(api: GhApi, issue: Issue) -> list[Issue]:
         word = next(word for word in pr_line.split() if word.startswith("gh-"))
         pr_number = int(word.split("-")[1])
         try:
-            pr = api.pulls.get(pr_number)
+            for attempt in stamina.retry_context(on=HTTPError):
+                with attempt:
+                    pr = api.pulls.get(pr_number)
         except HTTP404NotFoundError as e:
             print(f"[yellow]PR {pr_number} not found: {e}[/yellow]")
             continue
