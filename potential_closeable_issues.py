@@ -17,6 +17,7 @@ from __future__ import annotations
 import argparse
 import datetime as dt
 import json
+import logging
 import os
 from typing import Any, TypeAlias
 from urllib.error import HTTPError
@@ -29,6 +30,8 @@ from rich import print  # pip install rich
 
 Issue: TypeAlias = dict[str, Any]
 
+
+logging.basicConfig()
 
 GITHUB_TOKEN = os.environ["GITHUB_TOOLS_TOKEN"]
 
