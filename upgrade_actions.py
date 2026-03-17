@@ -11,6 +11,7 @@ Upgrade GitHub Actions versions in workflow file or directory
 
 uv run ~/github/github-tools/upgrade_actions.py
 """
+
 from __future__ import annotations
 
 import argparse
