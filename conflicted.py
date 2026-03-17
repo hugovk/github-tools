@@ -2,6 +2,7 @@
 """
 Find which of my PRs have merge conflicts.
 """
+
 from __future__ import annotations
 
 import argparse
