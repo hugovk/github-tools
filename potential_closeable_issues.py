@@ -36,8 +36,17 @@ logging.basicConfig()
 GITHUB_TOKEN = os.environ["GITHUB_TOOLS_TOKEN"]
 
 
-def _is_server_error(exc: Exception) -> bool:
-    return isinstance(exc, HTTPError) and exc.code >= 500
+# Status codes worth retrying. As well as server errors, GitHub intermittently
+# rejects a valid token with 401 "Bad credentials" (no rate-limit headers) at a
+# random point in a long request stream; it succeeds on resend. 403/429 cover
+# actual rate limiting.
+_RETRYABLE_STATUS = frozenset({401, 403, 429})
+
+
+def is_retryable(exc: Exception) -> bool:
+    return isinstance(exc, HTTPError) and (
+        exc.code >= 500 or exc.code in _RETRYABLE_STATUS
+    )
 
 
 def check_issue(api: GhApi, issue: Issue) -> list[Issue]:
@@ -78,7 +87,11 @@ def check_issue(api: GhApi, issue: Issue) -> list[Issue]:
         word = next(word for word in pr_line.split() if word.startswith("gh-"))
         pr_number = int(word.split("-")[1])
         try:
-            for attempt in stamina.retry_context(on=_is_server_error):
+            # Longer timeout/wait than the defaults so a cluster of transient
+            # 401s doesn't exhaust the retry window and fail the whole run.
+            for attempt in stamina.retry_context(
+                on=is_retryable, attempts=10, timeout=120, wait_max=30
+            ):
                 with attempt:
                     pr = api.pulls.get(pr_number)
         except HTTP404NotFoundError as e:
