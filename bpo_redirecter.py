@@ -3,6 +3,16 @@
 Update BPO links to GH issues in a file or directory of files
 """
 
+# /// script
+# requires-python = ">=3.11"
+# dependencies = [
+#     "httpx",
+#     "hishel",
+#     "rich",
+#     "termcolor",
+# ]
+# ///
+
 from __future__ import annotations
 
 import argparse
