@@ -1,5 +1,5 @@
 feedparser
-ghapi
+ghapi<2
 GitPython
 hishel>=1
 httpx
