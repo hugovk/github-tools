@@ -6,7 +6,7 @@ They're candidates for closing.
 # /// script
 # requires-python = ">=3.11"
 # dependencies = [
-#     "ghapi",
+#     "ghapi<2",
 #     "rich",
 #     "stamina",
 # ]

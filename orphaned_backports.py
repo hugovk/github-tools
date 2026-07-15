@@ -7,7 +7,7 @@ for merging or closing.
 # /// script
 # requires-python = ">=3.11"
 # dependencies = [
-#     "ghapi",
+#     "ghapi<2",
 #     "rich",
 #     "stamina",
 # ]

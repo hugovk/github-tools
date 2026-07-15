@@ -5,7 +5,7 @@ Find number of open issues/PRs in the Python org team.
 # /// script
 # requires-python = ">=3.10"
 # dependencies = [
-#   "ghapi",
+#   "ghapi<2",
 #   "prettytable>=3.12.0",
 #   "requests",
 #   "rich",
