@@ -111,6 +111,13 @@ def check_prs(
             if pr_count >= start + number:
                 return candidates
 
+            # GitHub's label-filtered search can return items whose backport
+            # labels were already removed; skip anything without one.
+            label_name = f"needs backport to {branch_to_check}"
+            if not any(label.name == label_name for label in pr.labels):
+                print(f"    [yellow]'{label_name}' label already removed[/yellow]")
+                continue
+
             if "/issues/" in pr.html_url:
                 print("    [red]Issue with backport labels[/red]")
                 candidates["issues with backport labels"].append(pr)
