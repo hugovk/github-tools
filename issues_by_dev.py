@@ -7,6 +7,7 @@ Find number of open issues/PRs in the Python org team.
 # dependencies = [
 #   "ghapi<2",
 #   "prettytable>=3.12.0",
+#   "pygithub>=2",
 #   "requests",
 #   "rich",
 #   "stamina",

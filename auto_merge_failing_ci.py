@@ -7,6 +7,7 @@ They won't be merged until the CI is fixed or re-run.
 # requires-python = ">=3.11"
 # dependencies = [
 #     "ghapi<2",
+#     "pygithub>=2",
 #     "rich",
 #     "stamina",
 # ]

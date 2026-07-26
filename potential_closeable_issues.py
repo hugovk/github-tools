@@ -6,9 +6,8 @@ They're candidates for closing.
 # /// script
 # requires-python = ">=3.11"
 # dependencies = [
-#     "ghapi<2",
+#     "pygithub>=2",
 #     "rich",
-#     "stamina",
 # ]
 # ///
 
@@ -20,36 +19,39 @@ import json
 import logging
 import os
 from typing import Any, TypeAlias
-from urllib.error import HTTPError
 
-import stamina
-from fastcore.net import HTTP404NotFoundError
-from fastcore.xtras import obj2dict
-from ghapi.all import GhApi, paged  # pip install ghapi
+from github import Auth, Github, UnknownObjectException  # pip install PyGitHub
+from github.GithubRetry import GithubRetry
+from github.Issue import Issue
+from github.Repository import Repository
 from rich import print  # pip install rich
 
-Issue: TypeAlias = dict[str, Any]
+IssueData: TypeAlias = dict[str, Any]
 
 
 logging.basicConfig()
+# Show GithubRetry's rate-limit waits in the CI log
+logging.getLogger("github").setLevel(logging.INFO)
 
 GITHUB_TOKEN = os.environ["GITHUB_TOOLS_TOKEN"]
 
 
-# Status codes worth retrying. As well as server errors, GitHub intermittently
-# rejects a valid token with 401 "Bad credentials" (no rate-limit headers) at a
-# random point in a long request stream; it succeeds on resend. 403/429 cover
-# actual rate limiting.
-_RETRYABLE_STATUS = frozenset({401, 403, 429})
+def make_github() -> Github:
+    """Client that sleeps out rate limits and retries transient errors.
 
-
-def is_retryable(exc: Exception) -> bool:
-    return isinstance(exc, HTTPError) and (
-        exc.code >= 500 or exc.code in _RETRYABLE_STATUS
+    GithubRetry itself handles 403, sleeping until the rate limit resets,
+    and appends it to status_forcelist. As well as server errors, retry 401:
+    GitHub intermittently rejects a valid token with "Bad credentials" at a
+    random point in a long request stream; it succeeds on resend.
+    """
+    retry = GithubRetry(
+        backoff_factor=2,
+        status_forcelist=[401, 429, *range(500, 600)],
     )
+    return Github(auth=Auth.Token(GITHUB_TOKEN), per_page=100, retry=retry)
 
 
-def check_issue(api: GhApi, issue: Issue) -> list[Issue]:
+def check_issue(repo: Repository, issue: Issue) -> list[IssueData]:
     """
     Look for a chunk like this, collect the PRs:
 
@@ -72,6 +74,7 @@ def check_issue(api: GhApi, issue: Issue) -> list[Issue]:
 
     in_linked_prs_section = False
     linked_prs = []
+    linked_pr_data = []
     states = []
     for line in issue.body.splitlines():
         if line.strip() == "<!-- gh-linked-prs -->":
@@ -87,14 +90,8 @@ def check_issue(api: GhApi, issue: Issue) -> list[Issue]:
         word = next(word for word in pr_line.split() if word.startswith("gh-"))
         pr_number = int(word.split("-")[1])
         try:
-            # Longer timeout/wait than the defaults so a cluster of transient
-            # 401s doesn't exhaust the retry window and fail the whole run.
-            for attempt in stamina.retry_context(
-                on=is_retryable, attempts=10, timeout=120, wait_max=30
-            ):
-                with attempt:
-                    pr = api.pulls.get(pr_number)
-        except HTTP404NotFoundError as e:
+            pr = repo.get_pull(pr_number)
+        except UnknownObjectException as e:
             print(f"[yellow]PR {pr_number} not found: {e}[/yellow]")
             continue
 
@@ -114,19 +111,20 @@ def check_issue(api: GhApi, issue: Issue) -> list[Issue]:
         print(pr_line, colour_state, pr.html_url)
 
         # Merge in the linked PR data to the issue
-        issue.setdefault("linked_prs", []).append(pr)
+        linked_pr_data.append(pr.raw_data)
 
+    issue_data = issue.raw_data | {"linked_prs": linked_pr_data}
     if not states:
         print("[yellow]*** NO PRS FOUND ***[/yellow]")
     elif all(state == "closed" for state in states):
         print("[red]*** ALL PRS CLOSED ***[/red]")
-        candidates.append(issue)
+        candidates.append(issue_data)
     elif all(state == "merged" for state in states):
         print("[purple]*** ALL PRS MERGED ***[/purple]")
-        candidates.append(issue)
+        candidates.append(issue_data)
     elif all(state in ("closed", "merged") for state in states):
         print("*** ALL PRS [red]CLOSED[/red] OR [purple]MERGED[/purple] ***")
-        candidates.append(issue)
+        candidates.append(issue_data)
 
     return candidates
 
@@ -162,8 +160,8 @@ def check_issues(
     number: int = 100,
     author: str | None = None,
     sort_by: str = "newest",
-) -> list[Issue]:
-    api = GhApi(owner="python", repo="cpython", token=GITHUB_TOKEN)
+) -> list[IssueData]:
+    repo = make_github().get_repo("python/cpython")
 
     sort, direction = sort_by_to_sort_and_direction(sort_by)
     candidates = []
@@ -172,25 +170,23 @@ def check_issues(
         "state": "open",
         "sort": sort,
         "direction": direction,
-        "per_page": 100,
     }
     if author is not None:
         params["creator"] = author
-    for page in paged(api.issues.list_for_repo, **params):
-        for issue in page:
-            if issue.html_url.startswith("https://github.com/python/cpython/pull/"):
-                continue
+    for issue in repo.get_issues(**params):
+        if issue.pull_request is not None:
+            continue
 
-            issue_count += 1
-            print(issue_count, start, number, issue.html_url)
+        issue_count += 1
+        print(issue_count, start, number, issue.html_url)
 
-            if issue_count < start:
-                continue
+        if issue_count < start:
+            continue
 
-            candidates.extend(check_issue(api, issue))
+        candidates.extend(check_issue(repo, issue))
 
-            if issue_count >= start + number - 1:
-                return candidates
+        if issue_count >= start + number - 1:
+            return candidates
 
     return candidates
 
@@ -244,15 +240,15 @@ def main() -> None:
     if candidates:
         cmd = "open "
         for issue in candidates:
-            print(issue.number, issue.html_url)
-            cmd += f"{issue.html_url} "
+            print(issue["number"], issue["html_url"])
+            cmd += f"{issue['html_url']} "
         print()
         print(cmd)
         if not args.dry_run:
             os.system(cmd)
 
     if args.json:
-        data = {"candidates": [obj2dict(c) for c in candidates]}
+        data = {"candidates": candidates}
         # Use same name as this .py but with .json
         filename = os.path.splitext(__file__)[0] + ".json"
         save_json(data, filename)

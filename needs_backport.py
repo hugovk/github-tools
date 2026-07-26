@@ -13,6 +13,7 @@ Some PRs have those labels but:
 # requires-python = ">=3.10"
 # dependencies = [
 #     "ghapi<2",
+#     "pygithub>=2",
 #     "rich",
 #     "stamina",
 # ]

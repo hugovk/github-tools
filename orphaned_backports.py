@@ -8,6 +8,7 @@ for merging or closing.
 # requires-python = ">=3.11"
 # dependencies = [
 #     "ghapi<2",
+#     "pygithub>=2",
 #     "rich",
 #     "stamina",
 # ]
