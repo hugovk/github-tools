@@ -12,10 +12,8 @@ Some PRs have those labels but:
 # /// script
 # requires-python = ">=3.10"
 # dependencies = [
-#     "ghapi<2",
 #     "pygithub>=2",
 #     "rich",
-#     "stamina",
 # ]
 # ///
 
@@ -30,16 +28,16 @@ from collections import defaultdict
 from functools import cache
 from typing import Any, TypeAlias
 
-from fastcore.xtras import obj2dict
-from ghapi.all import GhApi, paged  # pip install ghapi
+from github.Repository import Repository  # pip install PyGitHub
 from rich import print  # pip install rich
 
-from potential_closeable_issues import save_json, sort_by_to_sort_and_direction
+from potential_closeable_issues import (
+    make_github,
+    save_json,
+    sort_by_to_sort_and_direction,
+)
 
 PR: TypeAlias = dict[str, Any]
-
-
-GITHUB_TOKEN = os.environ["GITHUB_TOOLS_TOKEN"]
 
 
 @cache
@@ -58,8 +56,8 @@ def fetch_active_branches() -> str:
 
 
 @cache
-def get_pr_commit(api: GhApi, pull_number: int) -> str:
-    return api.pulls.get(pull_number=pull_number).merge_commit_sha
+def get_pr_commit(repo: Repository, pull_number: int) -> str:
+    return repo.get_pull(pull_number).merge_commit_sha
 
 
 @cache
@@ -82,7 +80,7 @@ def is_commit_title_in_branch(repo_path: str, title: str, branch: str) -> bool:
 
 
 def check_prs(
-    api: GhApi,
+    repo: Repository,
     repo_path: str,
     branch_to_check: str,
     start: int = 1,
@@ -92,51 +90,48 @@ def check_prs(
     sort, direction = sort_by_to_sort_and_direction(sort_by)
     candidates = defaultdict(list)  # reason => PRs
     pr_count = 0
-    for page in paged(
-        # The PR API doesn't filter by label.
-        # PR are really issues, so use the issues API.
-        api.issues.list_for_repo,
+    label_name = f"needs backport to {branch_to_check}"
+    # The PR API doesn't filter by label.
+    # PR are really issues, so use the issues API.
+    for pr in repo.get_issues(
         state="closed",
         sort=sort,
         direction=direction,
-        per_page=100,
-        labels=f"needs backport to {branch_to_check}",
+        labels=[label_name],
     ):
-        for pr in page:
-            pr_count += 1
-            print(pr_count, start, number, pr.html_url)
+        pr_count += 1
+        print(pr_count, start, number, pr.html_url)
 
-            if pr_count < start:
-                continue
+        if pr_count < start:
+            continue
 
-            if pr_count >= start + number:
-                return candidates
+        if pr_count >= start + number:
+            return candidates
 
-            # GitHub's label-filtered search can return items whose backport
-            # labels were already removed; skip anything without one.
-            label_name = f"needs backport to {branch_to_check}"
-            if not any(label.name == label_name for label in pr.labels):
-                print(f"    [yellow]'{label_name}' label already removed[/yellow]")
-                continue
+        # GitHub's label-filtered search can return items whose backport
+        # labels were already removed; skip anything without one.
+        if not any(label.name == label_name for label in pr.labels):
+            print(f"    [yellow]'{label_name}' label already removed[/yellow]")
+            continue
 
-            if "/issues/" in pr.html_url:
-                print("    [red]Issue with backport labels[/red]")
-                candidates["issues with backport labels"].append(pr)
-                continue
+        if "/issues/" in pr.html_url:
+            print("    [red]Issue with backport labels[/red]")
+            candidates["issues with backport labels"].append(pr.raw_data)
+            continue
 
-            if not pr.pull_request.merged_at:
-                # PR was closed without being merged, skip it
-                continue
-            commit = get_pr_commit(api, pr.number)
-            title = get_title_of_commit(repo_path, commit)
-            print(f"  {title}")
+        if not pr.pull_request.merged_at:
+            # PR was closed without being merged, skip it
+            continue
+        commit = get_pr_commit(repo, pr.number)
+        title = get_title_of_commit(repo_path, commit)
+        print(f"  {title}")
 
-            if is_commit_title_in_branch(repo_path, title, branch_to_check):
-                print("    [red]Backport found, remove label?[/red]")
-                candidates["PRs with backports"].append(pr)
-            else:
-                print(f"    [yellow]Backport to {branch_to_check} missing[/yellow]")
-                candidates["PRs missing backports"].append(pr)
+        if is_commit_title_in_branch(repo_path, title, branch_to_check):
+            print("    [red]Backport found, remove label?[/red]")
+            candidates["PRs with backports"].append(pr.raw_data)
+        else:
+            print(f"    [yellow]Backport to {branch_to_check} missing[/yellow]")
+            candidates["PRs missing backports"].append(pr.raw_data)
 
     return candidates
 
@@ -182,7 +177,7 @@ def main() -> None:
     )
     args = parser.parse_args()
 
-    api = GhApi(owner="python", repo="cpython", token=GITHUB_TOKEN)
+    repo = make_github().get_repo("python/cpython")
 
     # Find
     total_candidates = defaultdict(list)
@@ -193,7 +188,7 @@ def main() -> None:
         ).decode("utf-8")
         print(output)
         candidates = check_prs(
-            api, args.repo_path, branch, args.start, args.number, args.sort
+            repo, args.repo_path, branch, args.start, args.number, args.sort
         )
         for reason, prs in candidates.items():
             # Remove duplicates
@@ -225,10 +220,7 @@ def main() -> None:
 
     if args.json:
         data = {
-            "reasons": [
-                {reason: [obj2dict(pr) for pr in prs]}
-                for reason, prs in total_candidates.items()
-            ],
+            "reasons": [{reason: prs} for reason, prs in total_candidates.items()],
         }
         # Use same name as this .py but with .json
         filename = os.path.splitext(__file__)[0] + ".json"

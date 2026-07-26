@@ -7,10 +7,8 @@ for merging or closing.
 # /// script
 # requires-python = ">=3.11"
 # dependencies = [
-#     "ghapi<2",
 #     "pygithub>=2",
 #     "rich",
-#     "stamina",
 # ]
 # ///
 
@@ -18,23 +16,22 @@ from __future__ import annotations
 
 import argparse
 import os
-import urllib
 from typing import Any, TypeAlias
 
-import stamina
-from fastcore.xtras import obj2dict
-from ghapi.all import GhApi, paged  # pip install ghapi
+from github.PullRequest import PullRequest  # pip install PyGitHub
+from github.Repository import Repository
 from rich import print  # pip install rich
 
-from potential_closeable_issues import save_json, sort_by_to_sort_and_direction
+from potential_closeable_issues import (
+    make_github,
+    save_json,
+    sort_by_to_sort_and_direction,
+)
 
 PR: TypeAlias = dict[str, Any]
 
 
-GITHUB_TOKEN = os.environ["GITHUB_TOOLS_TOKEN"]
-
-
-def is_linked_issue_closed(api: GhApi, pr: PR) -> bool:
+def is_linked_issue_closed(repo: Repository, pr: PullRequest) -> bool:
     """
     Look for a chunk like this, collect the issue:
 
@@ -42,7 +39,7 @@ def is_linked_issue_closed(api: GhApi, pr: PR) -> bool:
     * Issue: gh-79846
     <!-- /gh-issue-number -->
     """
-    if pr["base"]["ref"] == "main":
+    if pr.base.ref == "main":
         # We only want backports
         print("  [yellow]Not a backport[/yellow]")
         return False
@@ -63,18 +60,13 @@ def is_linked_issue_closed(api: GhApi, pr: PR) -> bool:
         print("  [yellow]No linked issue found[/yellow]")
         return False
 
-    issue = api.issues.get(linked_issue)
+    issue = repo.get_issue(int(linked_issue))
 
     colour_state = (
-        "[green]open[/green]" if issue["state"] == "open" else "[red]closed[/red]"
+        "[green]open[/green]" if issue.state == "open" else "[red]closed[/red]"
     )
     print("  gh-" + linked_issue, colour_state, issue.html_url)
-    return issue["state"] == "closed"
-
-
-@stamina.retry(on=urllib.error.HTTPError)
-def stamina_paged(*args, **kwargs):
-    return paged(*args, **kwargs)
+    return issue.state == "closed"
 
 
 def check_prs(
@@ -83,33 +75,29 @@ def check_prs(
     author: str | None = None,
     sort_by: str = "newest",
 ) -> list[PR]:
-    api = GhApi(owner="python", repo="cpython", token=GITHUB_TOKEN)
+    repo = make_github().get_repo("python/cpython")
 
     sort, direction = sort_by_to_sort_and_direction(sort_by)
 
     candidates = []
     pr_count = 0
 
-    for page in stamina_paged(
-        api.pulls.list,
-        state="open",
-        creator=author,
-        sort=sort,
-        direction=direction,
-        per_page=100,
-    ):
-        for pr in page:
-            pr_count += 1
-            print(pr_count, start, number, pr.html_url)
+    for pr in repo.get_pulls(state="open", sort=sort, direction=direction):
+        # The PR list API can't filter by author, so filter here
+        if author and pr.user.login != author:
+            continue
 
-            if pr_count < start:
-                continue
+        pr_count += 1
+        print(pr_count, start, number, pr.html_url)
 
-            if is_linked_issue_closed(api, pr):
-                candidates.append(pr)
+        if pr_count < start:
+            continue
 
-            if pr_count >= start + number - 1:
-                return candidates
+        if is_linked_issue_closed(repo, pr):
+            candidates.append(pr.raw_data)
+
+        if pr_count >= start + number - 1:
+            return candidates
 
     return candidates
 
@@ -163,7 +151,7 @@ def main() -> None:
             os.system(cmd)
 
     if args.json:
-        data = {"candidates": [obj2dict(c) for c in candidates]}
+        data = {"candidates": candidates}
         # Use same name as this .py but with .json
         filename = os.path.splitext(__file__)[0] + ".json"
         save_json(data, filename)

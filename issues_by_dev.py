@@ -5,12 +5,10 @@ Find number of open issues/PRs in the Python org team.
 # /// script
 # requires-python = ">=3.10"
 # dependencies = [
-#   "ghapi<2",
 #   "prettytable>=3.12.0",
 #   "pygithub>=2",
 #   "requests",
 #   "rich",
-#   "stamina",
 # ]
 # ///
 
@@ -20,22 +18,16 @@ import argparse
 import csv
 import os
 from collections import Counter
-from itertools import chain
-from typing import Any, NamedTuple, TypeAlias
+from typing import NamedTuple
 
 import requests  # pip install requests
-from ghapi.all import GhApi, paged  # pip install ghapi
+from github.Issue import Issue  # pip install PyGitHub
+from github.Repository import Repository
 from prettytable import PrettyTable, TableStyle  # pip install "prettytable>=3.12.0"
 from rich import print  # pip install rich
 from rich.progress import track
 
-from potential_closeable_issues import save_json
-
-Issue: TypeAlias = dict[str, Any]
-
-# Token needs read:org "Read org and team membership, read org projects"
-# to read private organisation members. Otherwise only public are read.
-GITHUB_TOKEN = os.environ["GITHUB_TOOLS_TOKEN"]
+from potential_closeable_issues import make_github, save_json
 
 URL = "https://raw.githubusercontent.com/python/devguide/main/core-team/core-team.csv"
 REPO = "https://github.com/python/cpython"
@@ -46,22 +38,14 @@ class Author(NamedTuple):
     prs: list[Issue]
 
 
-def check_issues(author: str | None = None) -> Author:
-    api = GhApi(owner="python", repo="cpython", token=GITHUB_TOKEN)
-
+def check_issues(repo: Repository, author: str) -> Author:
     issues = []
     prs = []
-    for page in paged(
-        api.issues.list_for_repo,
-        state="open",
-        creator=author,
-        per_page=100,
-    ):
-        for issue in page:
-            if issue.html_url.startswith(f"{REPO}/pull/"):
-                prs.append(issue)
-            else:
-                issues.append(issue)
+    for issue in repo.get_issues(state="open", creator=author):
+        if issue.pull_request is not None:
+            prs.append(issue)
+        else:
+            issues.append(issue)
 
     return Author(issues, prs)
 
@@ -94,12 +78,11 @@ def main() -> None:
     args = parser.parse_args()
 
     # https://docs.github.com/en/rest/orgs/members?apiVersion=2022-11-28#list-organization-members
-    api = GhApi(owner="python", repo="cpython", token=GITHUB_TOKEN)
+    # Token needs read:org "Read org and team membership, read org projects"
+    # to read private organisation members. Otherwise only public are read.
+    gh = make_github()
     org_members = [
-        member.login
-        for member in chain.from_iterable(
-            paged(api.orgs.list_members, "python", per_page=100)
-        )
+        member.login for member in gh.get_organization("python").get_members()
     ]
     print(f"Found {len(org_members)} org members")
 
@@ -114,11 +97,12 @@ def main() -> None:
     print(f"Found {len(usernames)} total users")
 
     # Find issues for each user
+    repo = gh.get_repo("python/cpython")
     authors = {}
     totals = {}
     print("Fetch issues")
     for author in track(usernames[: args.number], description="Fetching issues..."):
-        authors[author] = check_issues(author)
+        authors[author] = check_issues(repo, author)
         totals[author] = len(authors[author].issues) + len(authors[author].prs)
 
     # Report

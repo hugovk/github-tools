@@ -6,10 +6,8 @@ They won't be merged until the CI is fixed or re-run.
 # /// script
 # requires-python = ">=3.11"
 # dependencies = [
-#     "ghapi<2",
 #     "pygithub>=2",
 #     "rich",
-#     "stamina",
 # ]
 # ///
 
@@ -17,20 +15,20 @@ from __future__ import annotations
 
 import argparse
 import os
-import urllib
 from typing import Any, TypeAlias
 
-import stamina
-from fastcore.xtras import obj2dict
-from ghapi.all import GhApi, paged  # pip install ghapi
+from github.PullRequest import PullRequest  # pip install PyGitHub
+from github.Repository import Repository
 from rich import print  # pip install rich
 
-from potential_closeable_issues import save_json, sort_by_to_sort_and_direction
+from potential_closeable_issues import (
+    make_github,
+    save_json,
+    sort_by_to_sort_and_direction,
+)
 
 PR: TypeAlias = dict[str, Any]
 
-
-GITHUB_TOKEN = os.environ["GITHUB_TOOLS_TOKEN"]
 
 FAILING_CONCLUSIONS = ("failure", "timed_out")
 FAILING_STATES = ("failure", "error")
@@ -39,30 +37,20 @@ FAILING_STATES = ("failure", "error")
 IGNORED_CHECKS = ("All required checks pass",)
 
 
-def get_failing_checks(api: GhApi, pr: PR) -> list[str]:
+def get_failing_checks(repo: Repository, pr: PullRequest) -> list[str]:
     """Names of failing check runs and commit statuses for the PR's head commit."""
-    sha = pr["head"]["sha"]
+    commit = repo.get_commit(pr.head.sha)
     failing = set()
 
-    check_runs = api.checks.list_for_ref(sha, per_page=100)
-    for run in check_runs["check_runs"]:
-        if (
-            run["conclusion"] in FAILING_CONCLUSIONS
-            and run["name"] not in IGNORED_CHECKS
-        ):
-            failing.add(run["name"])
+    for run in commit.get_check_runs():
+        if run.conclusion in FAILING_CONCLUSIONS and run.name not in IGNORED_CHECKS:
+            failing.add(run.name)
 
-    combined = api.repos.get_combined_status_for_ref(sha, per_page=100)
-    for status in combined["statuses"]:
-        if status["state"] in FAILING_STATES:
-            failing.add(status["context"])
+    for status in commit.get_combined_status().statuses:
+        if status.state in FAILING_STATES:
+            failing.add(status.context)
 
     return sorted(failing)
-
-
-@stamina.retry(on=urllib.error.HTTPError)
-def stamina_paged(*args, **kwargs):
-    return paged(*args, **kwargs)
 
 
 def check_prs(
@@ -71,42 +59,36 @@ def check_prs(
     author: str | None = None,
     sort_by: str = "newest",
 ) -> list[PR]:
-    api = GhApi(owner="python", repo="cpython", token=GITHUB_TOKEN)
+    repo = make_github().get_repo("python/cpython")
 
     sort, direction = sort_by_to_sort_and_direction(sort_by)
 
     candidates = []
     pr_count = 0
 
-    for page in stamina_paged(
-        api.pulls.list,
-        state="open",
-        creator=author,
-        sort=sort,
-        direction=direction,
-        per_page=100,
-    ):
-        for pr in page:
-            pr_count += 1
-            print(pr_count, start, number, pr.html_url)
+    for pr in repo.get_pulls(state="open", sort=sort, direction=direction):
+        # The PR list API can't filter by author, so filter here
+        if author and pr.user.login != author:
+            continue
 
-            if pr_count < start:
-                continue
+        pr_count += 1
+        print(pr_count, start, number, pr.html_url)
 
-            if pr.auto_merge:
-                failing_checks = get_failing_checks(api, pr)
-                if failing_checks:
-                    print("  [red]" + ", ".join(failing_checks) + "[/red]")
-                    candidate = obj2dict(pr)
-                    candidate["failing_checks"] = failing_checks
-                    candidates.append(candidate)
-                else:
-                    print("  [green]CI not failing[/green]")
+        if pr_count < start:
+            continue
+
+        if pr.auto_merge:
+            failing_checks = get_failing_checks(repo, pr)
+            if failing_checks:
+                print("  [red]" + ", ".join(failing_checks) + "[/red]")
+                candidates.append(pr.raw_data | {"failing_checks": failing_checks})
             else:
-                print("  [yellow]Auto-merge not enabled[/yellow]")
+                print("  [green]CI not failing[/green]")
+        else:
+            print("  [yellow]Auto-merge not enabled[/yellow]")
 
-            if pr_count >= start + number - 1:
-                return candidates
+        if pr_count >= start + number - 1:
+            return candidates
 
     return candidates
 
