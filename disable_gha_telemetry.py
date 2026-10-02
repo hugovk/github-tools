@@ -16,7 +16,7 @@ To remove, re-login with basic permissions:
 """
 
 # /// script
-# requires-python = ">=3.10"
+# requires-python = ">=3.11"
 # dependencies = ["termcolor"]
 # ///
 from __future__ import annotations

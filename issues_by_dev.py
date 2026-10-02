@@ -3,7 +3,7 @@ Find number of open issues/PRs in the Python org team.
 """
 
 # /// script
-# requires-python = ">=3.10"
+# requires-python = ">=3.11"
 # dependencies = [
 #   "prettytable>=3.12.0",
 #   "pygithub>=2",

@@ -10,7 +10,7 @@ Some PRs have those labels but:
 """
 
 # /// script
-# requires-python = ">=3.10"
+# requires-python = ">=3.11"
 # dependencies = [
 #     "pygithub>=2",
 #     "rich",
