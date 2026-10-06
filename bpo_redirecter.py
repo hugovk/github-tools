@@ -9,6 +9,7 @@ Update BPO links to GH issues in a file or directory of files
 #     "httpx",
 #     "hishel",
 #     "rich",
+#     "stamina",
 #     "termcolor",
 # ]
 # ///
@@ -26,6 +27,7 @@ from functools import cache
 from pathlib import Path
 
 import httpx  # pip install httpx
+import stamina  # pip install stamina
 from hishel.httpx import SyncCacheClient  # pip install hishel
 from termcolor import colored, cprint  # pip install termcolor
 
@@ -43,17 +45,36 @@ BPO_URL_REGEX = re.compile(r"https?://bugs\.python\.org/issue(\d+)")
 # For example:
 # :issue:`45440`
 BPO_ROLE_REGEX = re.compile(r":issue:`(\d+)`")
+GH_ISSUE_REGEX = re.compile(r"https://github\.com/python/cpython/issues/\d+")
 
 logger = logging.getLogger(__name__)
 
 
+class NotRedirectedError(RuntimeError):
+    """bugs.python.org did not redirect to a GitHub issue."""
+
+
 @cache
+@stamina.retry(on=(httpx.HTTPError, NotRedirectedError), wait_initial=1)
 def redirect(client: httpx.Client, bpo_number: int) -> str:
+    """Resolve a bugs.python.org issue number to its GitHub issue URL.
+
+    bugs.python.org sometimes answers 503 instead of redirecting, in which case
+    httpx returns the request URL unchanged. Retry with backoff rather than
+    silently writing that non-GitHub URL into the docs.
+    """
     redirect_link = f"https://bugs.python.org/issue?@action=redirect&bpo={bpo_number}"
     logger.info("Redirect link:\t%s", redirect_link)
     r = client.get(redirect_link, follow_redirects=True)
-    logger.info("GitHub link:\t%s", r.url)
-    return str(r.url)
+    gh_link = str(r.url)
+    if not GH_ISSUE_REGEX.fullmatch(gh_link):
+        msg = (
+            f"Expected a GitHub issue redirect for bpo-{bpo_number}, "
+            f"got HTTP {r.status_code} at {gh_link}"
+        )
+        raise NotRedirectedError(msg)
+    logger.info("GitHub link:\t%s", gh_link)
+    return gh_link
 
 
 def color_diff(diff: Iterable[str]) -> Iterable[str]:
