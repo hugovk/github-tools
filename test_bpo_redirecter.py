@@ -56,16 +56,22 @@ def test_do_lines_bpo_no_change(filename, old_line) -> None:
         ),
         (
             "library/curses.rst",
-            "      * A `bug in ncurses "
-            "<https://bugs.python.org/issue35924>`_, the backend",
-            "      * A `bug in ncurses "
-            "<https://github.com/python/cpython/issues/80105>`_, the backend",
+            (
+                "      * A `bug in ncurses "
+                "<https://bugs.python.org/issue35924>`_, the backend"
+            ),
+            (
+                "      * A `bug in ncurses "
+                "<https://github.com/python/cpython/issues/80105>`_, the backend"
+            ),
         ),
         (
             "c-api/typeobj.rst",
             "      `bug 40217 <https://bugs.python.org/issue40217>`_, doing this",
-            "      `bug 40217 <https://github.com/python/cpython/issues/84398>`_, "
-            "doing this",
+            (
+                "      `bug 40217 <https://github.com/python/cpython/issues/84398>`_, "
+                "doing this"
+            ),
         ),
         (
             "howto/logging-cookbook.rst",
@@ -75,8 +81,10 @@ def test_do_lines_bpo_no_change(filename, old_line) -> None:
         (
             "two-in-a-row.rst",
             "to https://bugs.python.org/issue3771 and https://bugs.python.org/issue3772.",
-            "to https://github.com/python/cpython/issues/48021 and "
-            "https://github.com/python/cpython/issues/48022.",
+            (
+                "to https://github.com/python/cpython/issues/48021 and "
+                "https://github.com/python/cpython/issues/48022."
+            ),
         ),
     ],
 )
