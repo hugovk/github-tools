@@ -62,9 +62,24 @@ def get_pr_commit(repo: Repository, pull_number: int) -> str:
 
 @cache
 def get_title_of_commit(repo_path: str, commit_sha: str) -> str:
+    try:
+        return _git_commit_title(repo_path, commit_sha)
+    except subprocess.CalledProcessError:
+        # The PR may have been merged after the local clone was made,
+        # so the merge commit isn't here yet. Fetch it and try again.
+        print(f"    [yellow]{commit_sha[:10]} not found locally, fetching[/yellow]")
+        subprocess.check_call(
+            ["git", "fetch", "--quiet", "origin", commit_sha], cwd=repo_path
+        )
+        return _git_commit_title(repo_path, commit_sha)
+
+
+def _git_commit_title(repo_path: str, commit_sha: str) -> str:
     return (
         subprocess.check_output(
-            ["git", "log", "-1", "--pretty=%B", commit_sha], cwd=repo_path
+            ["git", "log", "-1", "--pretty=%B", commit_sha],
+            cwd=repo_path,
+            stderr=subprocess.DEVNULL,
         )
         .decode("utf-8")
         .split("\n")[0]
