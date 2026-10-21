@@ -20,7 +20,12 @@ import logging
 import os
 from typing import Any, TypeAlias
 
-from github import Auth, Github, UnknownObjectException  # pip install PyGitHub
+from github import (  # pip install PyGitHub
+    Auth,
+    Github,
+    GithubException,
+    UnknownObjectException,
+)
 from github.GithubRetry import GithubRetry
 from github.Issue import Issue
 from github.Repository import Repository
@@ -93,6 +98,16 @@ def check_issue(repo: Repository, issue: Issue) -> list[IssueData]:
             pr = repo.get_pull(pr_number)
         except UnknownObjectException as e:
             print(f"[yellow]PR {pr_number} not found: {e}[/yellow]")
+            continue
+        except GithubException as e:
+            if e.status != 422:
+                raise
+            # GitHub intermittently answers GET /pulls/{n} with
+            # 422 "The request could not be processed because too many files
+            # changed" when it has to recompute a stale diff, even for tiny,
+            # long-merged PRs. Skip this PR rather than abort the whole run.
+            message = e.data.get("message", e)
+            print(f"[yellow]PR {pr_number} skipped: {message}[/yellow]")
             continue
 
         if pr.merged:
