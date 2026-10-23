@@ -3,7 +3,6 @@ GitPython
 hishel>=1
 httpx
 jsonlines
-prettytable
 PyGithub
 pytest
 pytest-cov
